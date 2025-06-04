@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🧠 Idiom Games: CEFR C1 – Speed Sort</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; background: #f9f9f9; text-align: center; padding: 20px; }
+    .word { display: inline-block; margin: 8px; padding: 10px 15px; background: #fff; border: 2px solid #ccc; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    .button { padding: 12px 20px; margin: 10px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .button:hover { background: #0056b3; }
+    #timer { font-size: 1.5em; margin: 10px; }
+    #sentence, #jumbled, #feedback, #definition { margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>⚡ Level 5 – Speed Sort (CEFR C1)</h1>
+  <p id="questionNum"></p>
+  <p id="progressScore"></p>
+  <div id="timer"></div>
+  <div id="jumbled"></div>
+  <div id="definition"></div>
+  <h3>Arrange the words:</h3>
+  <div id="sentence"></div>
+  <p id="feedback"></p>
+  <button onclick="nextQuestion()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    ➡️ Next
+  </button>
+
+  <audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
+
+  <script>
+    const questions = [
+      { answer: "Throw in the towel", def: "To give up or stop trying." },
+      { answer: "Back to the drawing board", def: "To start over with a new idea." },
+      { answer: "Bend over backwards", def: "To try very hard to help someone." },
+      { answer: "Cut to the chase", def: "Get to the point." },
+      { answer: "Don’t count your chickens before they hatch", def: "Don’t assume success before it happens." },
+      { answer: "Get a taste of your own medicine", def: "Receive the same unpleasant treatment you gave others." },
+      { answer: "Give someone the cold shoulder", def: "Ignore someone intentionally." },
+      { answer: "Have bigger fish to fry", def: "Have more important things to do." },
+      { answer: "In the heat of the moment", def: "Saying or doing something suddenly without thinking." },
+      { answer: "Know the ropes", def: "Be familiar with details of how something works." },
+      { answer: "Leave someone in the lurch", def: "Leave someone in a difficult situation." },
+      { answer: "Play devil’s advocate", def: "To argue against something just for the sake of argument." },
+      { answer: "Put a sock in it", def: "To tell someone to be quiet." },
+      { answer: "Sink or swim", def: "Fail or succeed by your own efforts." },
+      { answer: "Sweep under the rug", def: "Hide something embarrassing." },
+      { answer: "Take it with a grain of salt", def: "Don’t take it too seriously." },
+      { answer: "The writing on the wall", def: "Clear signs that something bad is going to happen." },
+      { answer: "Turn a blind eye", def: "Pretend not to notice something wrong." },
+      { answer: "Up in the air", def: "Undecided or uncertain." },
+      { answer: "Cross that bridge when you come to it", def: "Deal with a problem when it arises, not before." }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let timer;
+    let selected = [];
+    let locked = false;
+
+    function shuffle(arr) {
+      return arr.map(v => [v, Math.random()]).sort((a, b) => a[1] - b[1]).map(v => v[0]);
+    }
+
+    function startQuestion() {
+      locked = false;
+      selected = [];
+      const q = questions[current];
+      document.getElementById("questionNum").innerText = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("sentence").innerText = "";
+      document.getElementById("definition").innerText = `Meaning: ${q.def}`;
+      document.getElementById("jumbled").innerHTML = "";
+      const words = shuffle(q.answer.split(" "));
+      words.forEach(w => {
+        const el = document.createElement("span");
+        el.className = "word";
+        el.innerText = w;
+        el.onclick = () => selectWord(w, el);
+        document.getElementById("jumbled").appendChild(el);
+      });
+      startTimer();
+    }
+
+    function selectWord(word, el) {
+      if (locked) return;
+      selected.push(word);
+      el.style.visibility = "hidden";
+      const add = document.createElement("span");
+      add.className = "word";
+      add.innerText = word;
+      document.getElementById("sentence").appendChild(add);
+    }
+
+    function startTimer() {
+      let time = 10;
+      document.getElementById("timer").innerText = `Time: ${time}s`;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = `Time: ${time}s`;
+        if (time <= 0) {
+          clearInterval(timer);
+          checkAnswer();
+        }
+      }, 1000);
+    }
+
+    function checkAnswer() {
+      if (locked) return;
+      locked = true;
+      const q = questions[current];
+      const attempt = selected.join(" ");
+      const correct = attempt === q.answer;
+      if (correct) {
+        score++;
+        document.getElementById("sound-correct").play();
+        document.getElementById("feedback").innerHTML = `✅ Correct!`;
+      } else {
+        document.getElementById("sound-wrong").play();
+        document.getElementById("feedback").innerHTML = `❌ Wrong!<br>Correct answer: <b>${q.answer}</b>`;
+      }
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+    }
+
+    function nextQuestion() {
+      clearInterval(timer);
+      if (!locked) checkAnswer();
+      if (current < questions.length - 1) {
+        current++;
+        startQuestion();
+      } else {
+        document.body.innerHTML = `
+          <h2>🎉 Game Complete!</h2>
+          <p>Your score: ${score} / ${questions.length}</p>
+          <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🏠 Back to Home
+          </button>
+        `;      
+      }
+    }
+
+    startQuestion();
+  </script>
+
+  <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+  </button>
+
+</body>
+</html>

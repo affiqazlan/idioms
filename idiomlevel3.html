@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Idiom Games: CEFR B1 – Hangman</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; background: #f4f4f4; }
+    .hidden { display: none; }
+    .button { padding: 12px 20px; margin: 10px; font-size: 16px; background: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+    .button:hover { background: #0056b3; }
+    .letter { display: inline-block; width: 30px; height: 30px; line-height: 30px; border: 1px solid #ccc; margin: 3px; border-radius: 4px; font-size: 18px; background: white; }
+    .keyboard { margin-top: 20px; }
+    .key { padding: 10px 14px; margin: 5px; font-size: 16px; background: #eee; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+    .key:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+  <h1>🕹️ Level 3 – Hangman (CEFR B1)</h1>
+  <p id="questionNum"></p>
+  <p id="progressScore"></p>
+  <p id="definition"></p>
+  <div id="word"></div>
+  <svg id="hangmanSvg" width="120" height="160" style="margin: 10px auto; display: block;">
+  <!-- Gallows -->
+  <line x1="10" y1="150" x2="110" y2="150" stroke="black" /> <!-- base -->
+  <line x1="30" y1="150" x2="30" y2="20" stroke="black" />  <!-- pole -->
+  <line x1="30" y1="20" x2="80" y2="20" stroke="black" />   <!-- top bar -->
+  <line x1="80" y1="20" x2="80" y2="40" stroke="black" />   <!-- rope -->
+
+  <!-- Stickman Parts (hidden initially) -->
+  <circle id="head" cx="80" cy="50" r="10" stroke="black" fill="none" style="display: none;" />
+  <line id="body" x1="80" y1="60" x2="80" y2="100" stroke="black" style="display: none;" />
+  <line id="armL" x1="80" y1="70" x2="65" y2="85" stroke="black" style="display: none;" />
+  <line id="armR" x1="80" y1="70" x2="95" y2="85" stroke="black" style="display: none;" />
+  <line id="legL" x1="80" y1="100" x2="65" y2="120" stroke="black" style="display: none;" />
+  <line id="legR" x1="80" y1="100" x2="95" y2="120" stroke="black" style="display: none;" />
+</svg>
+
+  <!-- Existing elements continue -->
+  <div class="keyboard" id="keyboard"></div>
+  <p id="feedback"></p>
+  <div class="keyboard" id="keyboard"></div>
+  <p id="feedback"></p>
+  <button onclick="nextQuestion()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    ➡️ Next
+  </button>
+
+  <audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
+  <script>
+    const questions = [
+      { answer: "cost an arm and a leg", def: "To be very expensive." },
+      { answer: "actions speak louder than words", def: "What you do is more important than what you say." },
+      { answer: "beat around the bush", def: "To avoid saying something directly." },
+      { answer: "blessing in disguise", def: "Something good that isn’t recognized at first." },
+      { answer: "get your act together", def: "To organize yourself and your tasks." },
+      { answer: "hit the sack", def: "To go to bed." },
+      { answer: "jump the gun", def: "To do something too soon." },
+      { answer: "put yourself in someone’s shoes", def: "Imagine being in someone else’s situation." },
+      { answer: "stick to your guns", def: "To maintain your position." },
+      { answer: "burn the midnight oil", def: "To work late into the night." },
+      { answer: "speak of the devil", def: "When someone appears while being talked about." },
+      { answer: "the best of both worlds", def: "To enjoy two benefits at once." },
+      { answer: "throw in the towel", def: "To quit or give up." },
+      { answer: "a storm in a teacup", def: "Exaggerating a small problem." },
+      { answer: "keep something at bay", def: "To prevent something from coming near." },
+      { answer: "every cloud has a silver lining", def: "There is something good in every bad situation." },
+      { answer: "add fuel to the fire", def: "To make a problem worse." },
+      { answer: "rule of thumb", def: "A general guideline." },
+      { answer: "not playing with a full deck", def: "Someone who is mentally deficient." },
+      { answer: "out of the blue", def: "Unexpectedly." }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let guessed = [];
+    let wrong = 0;
+    const maxWrong = 6;
+
+    function initKeyboard() {
+      const alphabet = "abcdefghijklmnopqrstuvwxyz";
+      const kb = document.getElementById("keyboard");
+      kb.innerHTML = "";
+      for (let char of alphabet) {
+        const btn = document.createElement("button");
+        btn.className = "key";
+        btn.innerText = char;
+        btn.onclick = () => guessLetter(char);
+        kb.appendChild(btn);
+      }
+    }
+
+    function showWord() {
+      const q = questions[current];
+      const display = q.answer.split("").map(c => {
+        if (c === " ") return " ";
+        return guessed.includes(c.toLowerCase()) ? c : "_";
+      });
+      document.getElementById("word").innerHTML = display.map(l => `<span class='letter'>${l}</span>`).join("");
+    }
+
+    function updateHangmanDrawing(wrong) {
+      const parts = ["head", "body", "armL", "armR", "legL", "legR"];
+      parts.forEach((part, index) => {
+        document.getElementById(part).style.display = index < wrong ? "inline" : "none";
+      });
+    }
+
+    function guessLetter(letter) {
+      const q = questions[current];
+      if (q.answer.toLowerCase().includes(letter)) {
+        guessed.push(letter);
+        document.getElementById("sound-correct").play();
+      } else {
+        wrong++;
+        updateHangmanDrawing(wrong);
+        document.getElementById("sound-wrong").play();
+      }
+      showWord();
+      checkEnd();
+    }
+
+    function checkEnd() {
+      const q = questions[current];
+      const normalized = q.answer.replace(/[^a-z]/gi, "").toLowerCase();
+      const currentGuess = normalized.split("").every(c => guessed.includes(c));
+      if (currentGuess) {
+        score++;
+        document.getElementById("feedback").innerText = `✅ Correct!`;
+      } else if (wrong >= maxWrong) {
+        document.getElementById("feedback").innerText = `❌ Out of tries! The answer was: "${q.answer}"`;
+      }
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+    }
+
+    function loadQuestion() {
+      guessed = [];
+      wrong = 0;
+      updateHangmanDrawing(0);
+      const q = questions[current];
+      document.getElementById("questionNum").innerText = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById("definition").innerText = q.def;
+      document.getElementById("feedback").innerText = "";
+      initKeyboard();
+      showWord();
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        loadQuestion();
+      } else {
+        document.body.innerHTML = `
+          <h2>🎉 Game Complete!</h2>
+          <p>Your score: ${score} / ${questions.length}</p>
+          <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🏠 Back to Home
+          </button>
+        `;      
+      }
+    }
+
+    loadQuestion();
+  </script>
+
+  <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+  </button>
+
+</body>
+</html>

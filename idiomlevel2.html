@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🧠 Idiom Games: CEFR A2 – Time Bomb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; background: #f0f0f0; }
+    .hidden { display: none; }
+    .button { padding: 12px 24px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .button:hover { background: #0056b3; }
+    .option { display: block; margin: 10px auto; padding: 12px; background: #fff; border: 1px solid #ccc; border-radius: 6px; width: 90%; max-width: 400px; cursor: pointer; }
+    .option:hover { background: #eee; }
+    #timer { font-size: 2em; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>🧨 Level 2 – Idiom Time Bomb</h1>
+  <p id="questionNum"></p>
+  <p id="progressScore"></p>
+  <h2 id="idiom"></h2>
+<!-- 🔥 BOMB SVG TIMER -->
+<svg id="bombSVG" width="100" height="100" viewBox="0 0 100 100" style="margin: 10px auto; display: block;">
+  <!-- Bomb body -->
+  <circle cx="50" cy="60" r="30" fill="black" />
+  <!-- Burning fuse -->
+  <line id="fuse" x1="50" y1="30" x2="50" y2="10" stroke="orange" stroke-width="4" stroke-linecap="round" />
+  <!-- Explosion effect (initially hidden) -->
+  <text id="explosion" x="50%" y="60%" text-anchor="middle" fill="red" font-size="18" style="display: none;">💥</text>
+</svg>
+  <div id="timer">10</div>
+  <div id="choices"></div>
+  <p id="feedback"></p>
+  <button onclick="nextQuestion()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    ➡️ Next
+  </button>
+
+  <audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
+  <script>
+    const questions = [
+      { idiom: "Let the cat out of the bag", answer: "Reveal a secret", choices: ["Reveal a secret", "Cause confusion", "Win a prize", "Make a mistake", "Calm someone down"] },
+      { idiom: "Hit the nail on the head", answer: "Be exactly right", choices: ["Get angry", "Be exactly right", "Work hard", "Sleep deeply", "Lose hope"] },
+      { idiom: "The ball is in your court", answer: "It's your decision", choices: ["Play fairly", "Give up", "It's your decision", "Act surprised", "Be quiet"] },
+      { idiom: "When pigs fly", answer: "Something will never happen", choices: ["It will rain", "Try harder", "Be patient", "Something will never happen", "Lose control"] },
+      { idiom: "Cry over spilled milk", answer: "Upset about something", choices: ["Fix a problem", "Drink quickly", "Tell a lie", "Act happy", "Upset about something"] },
+      { idiom: "Get cold feet", answer: "Become nervous", choices: ["Go to sleep", "Become nervous", "Walk fast", "Catch a cold", "Get married"] },
+      { idiom: "Kill two birds with one stone", answer: "Achieve two things at once", choices: ["Cook dinner", "Win a game", "Achieve two things at once", "Travel far", "Say something twice"] },
+      { idiom: "Barking up the wrong tree", answer: "Accuse the wrong person", choices: ["Climb a tree", "Be confused", "Ignore advice", "Accuse the wrong person", "Ask for help"] },
+      { idiom: "It’s a small world", answer: "Meeting someone unexpectedly", choices: ["Traveling far", "Being shy", "Learning quickly", "Working late", "Meeting someone unexpectedly"] },
+      { idiom: "In the same boat", answer: "In the same situation", choices: ["In the same situation", "On vacation", "Winning a game", "Getting a reward", "Feeling sick"] },
+      { idiom: "Burn the candle at both ends", answer: "Do too many things", choices: ["Do too many things", "Light candles", "Sleep a lot", "Stay safe", "Hide feelings"] },
+      { idiom: "Pull someone’s leg", answer: "Joke with someone", choices: ["Help someone", "Joke with someone", "Stop someone", "Follow someone", "Fight someone"] },
+      { idiom: "Bite your tongue", answer: "Stop speaking", choices: ["Shout loudly", "Eat quickly", "Whisper", "Stop speaking", "Lie"] },
+      { idiom: "On thin ice", answer: "In a risky situation", choices: ["In a risky situation", "Being cold", "Traveling far", "Breaking rules", "Being shy"] },
+      { idiom: "The last straw", answer: "Final problem", choices: ["New idea", "Final problem", "Sudden success", "Harsh joke", "False hope"] },
+      { idiom: "A leopard can’t change its spots", answer: "People don't change", choices: ["Animals are dangerous", "Love is blind", "People don't change", "Luck will come", "Time flies"] },
+      { idiom: "Break a leg", answer: "Good luck", choices: ["Be careful", "Run fast", "Act poorly", "Good luck", "Fall down"] },
+      { idiom: "Don’t put all your eggs in one basket", answer: "Don’t risk everything in one place", choices: ["Eat more", "Work less", "Stay silent", "Go early", "Don’t risk everything in one place"] },
+      { idiom: "Keep your chin up", answer: "Stay positive", choices: ["Stay positive", "Look surprised", "Tell a joke", "Speak loudly", "Work harder"] },
+      { idiom: "Sit on the fence", answer: "Not decide", choices: ["Take a break", "Sleep outside", "Not decide", "Give up", "Win easily"] }
+    ];
+    let current = 0;
+// 🔧 Bomb SVG Animation Functions
+function updateFuse(timeLeft) {
+  const fuse = document.getElementById("fuse");
+  const explosion = document.getElementById("explosion");
+
+  // Adjust fuse length as time decreases
+  const y2 = 10 + (20 * (10 - timeLeft)) / 10;
+  fuse.setAttribute("y2", y2);
+
+  // Hide explosion while ticking
+  explosion.style.display = "none";
+}
+
+function triggerExplosion() {
+  const fuse = document.getElementById("fuse");
+  const explosion = document.getElementById("explosion");
+
+  // Short fuse + show explosion
+  fuse.setAttribute("y2", 10);
+  explosion.style.display = "inline";
+}
+    let score = 0;
+    let timer;
+function startTimer() {
+  let timeLeft = 10;
+  document.getElementById("timer").innerText = timeLeft;
+  updateFuse(timeLeft); // 🔥 Reset fuse
+
+  timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").innerText = timeLeft;
+    updateFuse(timeLeft); // 🔥 Animate fuse
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      triggerExplosion(); // 💥 Boom!
+      showFeedback(false);
+    }
+  }, 1000);
+}
+    function loadQuestion() {
+      clearInterval(timer);
+      const q = questions[current];
+      document.getElementById("questionNum").innerText = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+      document.getElementById("idiom").innerText = q.idiom;
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("choices").innerHTML = "";
+      q.choices.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.innerText = c;
+        div.onclick = () => {
+          clearInterval(timer);
+          showFeedback(c === q.answer);
+        };
+        document.getElementById("choices").appendChild(div);
+      });
+      startTimer();
+    }
+    function showFeedback(correct) {
+      if (document.getElementById("feedback").innerText !== "") return; // Prevent multiple triggers
+      const q = questions[current];
+      if (correct) {
+        score++;
+        document.getElementById("sound-correct").play();
+        document.getElementById("feedback").innerHTML = `✅ Correct!<br>${q.answer}`;
+} else {
+  document.getElementById("sound-wrong").play();
+  triggerExplosion(); // 💥 Boom on wrong answer
+  document.getElementById("feedback").innerHTML = `❌ Boom!<br>The correct answer was: <b>${q.answer}</b>`;
+}
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+    }
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        loadQuestion();
+      } else {
+        document.body.innerHTML = `
+          <h2>🎉 Game Complete!</h2>
+          <p>Your score: ${score} / ${questions.length}</p>
+          <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🏠 Back to Home
+          </button>
+        `;      
+      }
+    }
+
+    loadQuestion();
+  </script>
+
+  <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+  </button>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Idiom Games: CEFR C2 – Fill-in-the-Idiom</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; background: #f5f5f5; }
+    select, .button { font-size: 16px; padding: 8px; margin: 10px; }
+    .button { background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .button:hover { background: #0056b3; }
+    #feedback { font-size: 18px; margin: 15px; }
+  </style>
+</head>
+<body>
+  <h1>🧩 Level 6 – Fill-in-the-Idiom (CEFR C2)</h1>
+  <p id="questionNum"></p>
+  <p id="progressScore"></p>
+  <div id="question"></div>
+  <button onclick="checkAnswer()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+  ✅ Submit
+  </button>
+  
+  <p id="feedback"></p> 
+  <audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
+
+  <script>
+    const questions = [
+      { base: "A feather in one’s ___", correct: "cap", options: ["cap", "hat", "hand"], def: "An achievement to be proud of." },
+      { base: "Ahead of the ___", correct: "curve", options: ["line", "curve", "trend"], def: "More advanced or innovative." },
+      { base: "At the drop of a ___", correct: "hat", options: ["pin", "hat", "coin"], def: "Immediately or without delay." },
+      { base: "Beating a dead ___", correct: "horse", options: ["dog", "horse", "idea"], def: "To continue doing something pointless." },
+      { base: "Between a rock and a hard ___", correct: "place", options: ["thing", "place", "choice"], def: "Faced with two difficult choices." },
+      { base: "By and ___", correct: "large", options: ["wide", "small", "large"], def: "Generally; overall." },
+      { base: "Come rain or ___", correct: "shine", options: ["snow", "shine", "storm"], def: "No matter what happens." },
+      { base: "Cut the ___", correct: "mustard", options: ["mustard", "rope", "cord"], def: "To succeed or meet expectations." },
+      { base: "Draw a line in the ___", correct: "sand", options: ["sand", "road", "air"], def: "To set a limit or boundary." },
+      { base: "Get down to brass ___", correct: "tacks", options: ["buttons", "tacks", "nails"], def: "Focus on the essential details." },
+      { base: "Have an axe to ___", correct: "grind", options: ["grind", "throw", "wield"], def: "Have a hidden motive or complaint." },
+      { base: "In the driver’s ___", correct: "seat", options: ["seat", "lane", "chair"], def: "In control of a situation." },
+      { base: "Keep your nose to the ___", correct: "grindstone", options: ["grindstone", "wheel", "track"], def: "Work hard consistently." },
+      { base: "Not all it’s cracked up to ___", correct: "be", options: ["shine", "seem", "be"], def: "Not as good as expected." },
+      { base: "Off the beaten ___", correct: "track", options: ["road", "track", "trail"], def: "In a remote or uncommon location." },
+      { base: "Put your money where your ___ is", correct: "mouth", options: ["mouth", "heart", "head"], def: "Back your words with action or money." },
+      { base: "The whole nine ___", correct: "yards", options: ["yards", "steps", "turns"], def: "Everything possible." },
+      { base: "Throw your weight ___", correct: "around", options: ["off", "around", "forward"], def: "Act in a dominating manner." },
+      { base: "Toe the ___", correct: "line", options: ["mark", "line", "edge"], def: "Follow the rules." },
+      { base: "With bells ___", correct: "on", options: ["on", "out", "up"], def: "Show up with enthusiasm." }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("questionNum").innerText = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+      document.getElementById("feedback").innerText = "";
+
+      let html = `<span style="font-size:22px; font-weight:bold;">${q.base.replace("___", `<select id='answer'>` + q.options.map(opt => `<option value='${opt}'>${opt}</option>`).join('') + `</select>`)}</span><br><span style="font-size:18px;"><i>${q.def}</i></span>`;
+
+      document.getElementById("question").innerHTML = html;
+    }
+
+    function checkAnswer() {
+      const selected = document.getElementById("answer").value;
+      const q = questions[current];
+      if (selected === q.correct) {
+        score++;
+        document.getElementById("sound-correct").play();
+        document.getElementById("feedback").innerHTML = `✅ Correct!`;
+      } else {
+        document.getElementById("sound-wrong").play();
+        document.getElementById("feedback").innerHTML = `❌ Wrong! The correct answer was: <b>${q.correct}</b>`;
+      }
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${questions.length}`;
+      if (current < questions.length - 1) {
+        current++;
+        setTimeout(loadQuestion, 2000);
+      } else {
+        setTimeout(() => {
+          document.body.innerHTML = `
+            <h2>🎉 Game Complete!</h2>
+            <p>Your final score: ${score} / ${questions.length}</p>
+            <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+              🏠 Back to Home
+            </button>
+          `;
+        }, 2000);
+      }
+    }
+
+    loadQuestion();
+  </script>
+
+  <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+  </button>
+
+</body>
+</html>

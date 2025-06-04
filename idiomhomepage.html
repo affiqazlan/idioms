@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Idiom Games Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #2ecc71;
+      --dark: #2c3e50;
+      --light: #ecf0f1;
+      --gray: #95a5a6;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: var(--dark);
+      margin-bottom: 10px;
+      font-size: 2.5em;
+    }
+    
+    .subtitle {
+      color: var(--gray);
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+    
+    .game-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: 2px solid var(--light);
+      text-align: center;
+    }
+    
+    .game-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+    
+    .game-card h3 {
+      color: var(--dark);
+      margin-top: 0;
+      font-size: 1.3em;
+    }
+    
+    .game-card .level {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      margin-bottom: 10px;
+    }
+    
+    .game-card .cefr {
+      font-weight: bold;
+      color: var(--primary-dark);
+    }
+    
+    .game-card .play-btn {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-top: 15px;
+      transition: background 0.3s;
+      border: none;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    
+    .game-card .play-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .game-card .emoji {
+      font-size: 2.5em;
+      margin: 10px 0;
+    }
+    
+    .cefr-info {
+      background: var(--light);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 30px 0;
+      text-align: center;
+    }
+    
+    .cefr-levels {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+    
+    .cefr-level {
+      padding: 10px;
+      min-width: 100px;
+    }
+    
+    .cefr-level strong {
+      display: block;
+      font-size: 1.2em;
+      color: var(--dark);
+    }
+    
+    footer {
+      margin-top: 40px;
+      color: var(--gray);
+      font-size: 0.9em;
+    }
+    
+    .disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .disabled .play-btn {
+      background: var(--gray);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Idiom Games Hub</h1>
+    <p class="subtitle">Master English idioms through fun interactive games at all CEFR levels</p>
+    
+    <div class="cefr-info">
+      <h3>Common European Framework of Reference (CEFR) Levels</h3>
+      <p>Select a game matching your English proficiency level:</p>
+      <div class="cefr-levels">
+        <div class="cefr-level"><strong>A1</strong> Beginner</div>
+        <div class="cefr-level"><strong>A2</strong> Elementary</div>
+        <div class="cefr-level"><strong>B1</strong> Intermediate</div>
+        <div class="cefr-level"><strong>B2</strong> Upper Intermediate</div>
+        <div class="cefr-level"><strong>C1</strong> Advanced</div>
+        <div class="cefr-level"><strong>C2</strong> Proficient</div>
+      </div>
+    </div>
+    
+    <div class="game-grid">
+      <!-- Video Masterclass Card -->
+      <div class="game-card">
+        <div class="emoji">🎥</div>
+        <div class="level">Masterclass</div>
+        <h3>Idiom Masterclass</h3>
+        <p>Learn idioms in 6 short video lessons</p>
+        <p class="cefr">All CEFR Levels</p>
+        <button class="play-btn" onclick="window.location.href='idiommasterclass.html'">Watch Now</button>
+      </div>
+
+      <!-- Idiom Explorer Card -->
+      <div class="game-card">
+        <div class="emoji">📚</div>
+        <div class="level">Reference</div>
+        <h3>Idiom Explorer</h3>
+        <p>Explore meanings, usage, and cultural backgrounds</p>
+        <p class="cefr">All CEFR Levels</p>
+        <button class="play-btn" onclick="window.location.href='idiomnotes.html'">Explore Now</button>
+      </div>
+
+      <!-- Level 1 -->
+      <div class="game-card">
+        <div class="emoji">😀</div>
+        <div class="level">Level 1</div>
+        <h3>Emoji Decoder</h3>
+        <p>Guess idioms from emoji clues</p>
+        <p class="cefr">CEFR A1 (Beginner)</p>
+        <button class="play-btn" onclick="startGame(1)">Play Now</button>
+      </div>
+      
+      <!-- Level 2 -->
+      <div class="game-card">
+        <div class="emoji">🧨</div>
+        <div class="level">Level 2</div>
+        <h3>Time Bomb</h3>
+        <p>Answer before time runs out!</p>
+        <p class="cefr">CEFR A2 (Elementary)</p>
+        <button class="play-btn" onclick="startGame(2)">Play Now</button>
+      </div>
+      
+      <!-- Level 3 -->
+      <div class="game-card">
+        <div class="emoji">🕹️</div>
+        <div class="level">Level 3</div>
+        <h3>Hangman</h3>
+        <p>Classic game with idioms</p>
+        <p class="cefr">CEFR B1 (Intermediate)</p>
+        <button class="play-btn" onclick="startGame(3)">Play Now</button>
+      </div>
+      
+      <!-- Level 4 -->
+      <div class="game-card">
+        <div class="emoji">❤️</div>
+        <div class="level">Level 4</div>
+        <h3>Idiom Tindr</h3>
+        <p>Swipe to identify real idioms</p>
+        <p class="cefr">CEFR B2 (Upper Intermediate)</p>
+        <button class="play-btn" onclick="startGame(4)">Play Now</button>
+      </div>
+      
+      <!-- Level 5 -->
+      <div class="game-card">
+        <div class="emoji">⚡</div>
+        <div class="level">Level 5</div>
+        <h3>Speed Sort</h3>
+        <p>Arrange words quickly</p>
+        <p class="cefr">CEFR C1 (Advanced)</p>
+        <button class="play-btn" onclick="startGame(5)">Play Now</button>
+      </div>
+      
+      <!-- Level 6 -->
+      <div class="game-card">
+        <div class="emoji">🧩</div>
+        <div class="level">Level 6</div>
+        <h3>Fill-in-the-Idiom</h3>
+        <p>Complete missing words</p>
+        <p class="cefr">CEFR C2 (Proficient)</p>
+        <button class="play-btn" onclick="startGame(6)">Play Now</button>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Created by Affiq Azlan</p>
+      <p>Faculty of Language Studies and Human Development</p>
+      <p>Universiti Malaysia Kelantan</p>
+    </footer>
+  </div>
+
+  <script>
+    function startGame(level) {
+      // Array of game file names corresponding to each level
+      const gameFiles = [
+        null, // index 0 unused
+        "idiomlevel1.html", // Level 1
+        "idiomlevel2.html", // Level 2
+        "idiomlevel3.html", // Level 3
+        "idiomlevel4.html", // Level 4
+        "idiomlevel5.html", // Level 5
+        "idiomlevel6.html"  // Level 6
+      ];
+      
+      if (level >= 1 && level <= 6) {
+        // Redirect to the selected game
+        window.location.href = gameFiles[level];
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Idiom Games: CEFR A1 – Emoji Decoder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f0f0f0; padding: 20px; }
+    .emoji { font-size: 2em; margin: 20px 0; }
+    .option { display: block; margin: 10px auto; padding: 10px 20px; font-size: 16px; width: 80%; max-width: 400px; background: #fff; border: 2px solid #007bff; border-radius: 5px; cursor: pointer; }
+    .option:hover { background: #e0e0ff; }
+    #feedback { margin-top: 15px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>😀 Level 1 – Emoji Decoder (CEFR A1)</h1>
+  <p id="questionNum"></p>
+  <p id="score"></p>
+  <div class="emoji" id="emoji"></div>
+  <div id="options"></div>
+  <p id="feedback"></p>
+  <button onclick="nextQuestion()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    ➡️ Next
+  </button>
+
+  <audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
+
+  <script>
+    const questions = [
+      { emoji: "📚💥🧠", answer: "Hit the books", options: ["Hit the books", "Throw the book", "Book club"], def: "To study very hard." },
+      { emoji: "🌧️🤒😞", answer: "Under the weather", options: ["Feel the rain", "Under the weather", "Weather forecast"], def: "Feeling sick." },
+      { emoji: "🍰🧩👌", answer: "A piece of cake", options: ["Cake puzzle", "A piece of cake", "Cut the cake"], def: "Something very easy." },
+      { emoji: "🔥🥵💦", answer: "In hot water", options: ["Boiling bath", "Hot trouble", "In hot water"], def: "In trouble." },
+      { emoji: "☁️9️⃣😊", answer: "On cloud nine", options: ["In the sky", "On cloud nine", "Nine clouds"], def: "Very happy." },
+      { emoji: "🐟🌊🏞️", answer: "A big fish in a small pond", options: ["A big fish", "A small ocean", "A big fish in a small pond"], def: "An important person in a small group." },
+      { emoji: "🧊🦶😬", answer: "Cold feet", options: ["Cold feet", "Ice toes", "Snow walk"], def: "Nervous before doing something." },
+      { emoji: "📞☀️🛑", answer: "Call it a day", options: ["Call it morning", "Call it a day", "Phone the sun"], def: "Stop working for the day." },
+      { emoji: "🅰️🅱️🧠", answer: "As easy as ABC", options: ["ABC puzzle", "As easy as ABC", "Alphabet game"], def: "Very simple." },
+      { emoji: "📷🌙🔵", answer: "Once in a blue moon", options: ["Moon light", "Photo night", "Once in a blue moon"], def: "Very rarely." },
+      { emoji: "👁️🔍👮", answer: "Keep an eye on", options: ["Eye on glass", "Keep an eye on", "Watch the clock"], def: "Watch something carefully." },
+      { emoji: "❌☕😒", answer: "It’s not my cup of tea", options: ["Don’t drink it", "It’s not my cup of tea", "Spill the tea"], def: "Not something you like." },
+      { emoji: "🍀😊🌙", answer: "Over the moon", options: ["Lucky smile", "Over the moon", "Above the star"], def: "Very happy." },
+      { emoji: "🔥🥔👐", answer: "A hot potato", options: ["Spicy food", "Hot topic", "A hot potato"], def: "A difficult issue." },
+      { emoji: "⏰🕊️💨", answer: "Time flies", options: ["Clock bird", "Time flies", "Flying alarm"], def: "Time passes quickly." },
+      { emoji: "🧠👀🫘", answer: "Full of beans", options: ["Brain eyes", "Full of beans", "Clever man"], def: "Very energetic." },
+      { emoji: "📃⚫⚪", answer: "In black and white", options: ["Check the page", "Black paper", "In black and white"], def: "Written clearly." },
+      { emoji: "🏋️⛔😖", answer: "No pain no gain", options: ["Hard work", "No pain no gain", "Lift or lose"], def: "You must work hard to succeed." },
+      { emoji: "🌅🐦🪱", answer: "The early bird catches the worm", options: ["Morning bird", "Early worm", "The early bird catches the worm"], def: "People who start early succeed." },
+      { emoji: "🧊💬🎤", answer: "Break the ice", options: ["Melt words", "Ice breaker", "Break the ice"], def: "To start a conversation." }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("questionNum").innerText = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById("score").innerText = `Score: ${score} / ${questions.length}`;
+      document.getElementById("emoji").innerText = q.emoji;
+      document.getElementById("feedback").innerText = "";
+
+      const optionsHtml = q.options.map(opt => `<button class='option' onclick="checkAnswer('${opt}')">${opt}</button>`).join('');
+      document.getElementById("options").innerHTML = optionsHtml;
+    }
+
+    function checkAnswer(selected) {
+      const q = questions[current];
+      if (selected === q.answer) {
+        score++;
+        document.getElementById("sound-correct").play();
+        document.getElementById("feedback").innerHTML = `✅ Correct!<br><i>${q.def}</i>`;
+      } else {
+        document.getElementById("sound-wrong").play();
+        document.getElementById("feedback").innerHTML = `❌ Wrong!<br>The correct answer was: <b>${q.answer}</b><br><i>${q.def}</i>`;
+      }
+      document.getElementById("score").innerText = `Score: ${score} / ${questions.length}`;
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        loadQuestion();
+      } else {
+        document.body.innerHTML = `
+          <h2>🎉 Game Complete!</h2>
+          <p>Your score: ${score} / ${questions.length}</p>
+          <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🏠 Back to Home
+          </button>
+        `;      
+      }
+    }
+
+    loadQuestion();
+  </script>
+
+  <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+  </button>
+
+</body>
+</html>

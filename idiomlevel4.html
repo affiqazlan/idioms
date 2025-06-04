@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Idiom Games: CEFR B2 – Idiom Tindr</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; background: #f0f0f0; padding: 20px; text-align: center; }
+    .button { padding: 12px 20px; margin: 8px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .button:hover { background: #0056b3; }
+    #idiom { font-size: 1.6em; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>❤️ Level 4 – Idiom Tindr (CEFR B2)</h1>
+  <p id="questionNum"></p>
+  <p id="progressScore"></p>
+  <div id="idiom"></div>
+  <button class="button" onclick="swipe(true)">Idiom ✅</button>
+  <button class="button" onclick="swipe(false)">Not an Idiom ❌</button>
+  <p id="feedback"></p>
+  <button onclick="nextQuestion()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    ➡️ Next
+  </button>
+
+  <audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
+
+  <script>
+    const questions = [
+      { text: "Put all your eggs in one basket", isIdiom: true, def: "To risk everything on a single plan." },
+      { text: "By the skin of your teeth", isIdiom: true, def: "Narrowly or barely succeeding." },
+      { text: "Call the shots", isIdiom: true, def: "To be the one who makes the decisions." },
+      { text: "Cut corners", isIdiom: true, def: "To do something in the easiest or cheapest way." },
+      { text: "Give someone the benefit of the doubt", isIdiom: true, def: "To believe someone is innocent or telling the truth." },
+      { text: "Go the extra mile", isIdiom: true, def: "To do more than is expected." },
+      { text: "Jump on the bandwagon", isIdiom: true, def: "To adopt a popular trend." },
+      { text: "Leave no stone unturned", isIdiom: true, def: "To do everything possible to achieve a goal." },
+      { text: "Let sleeping dogs lie", isIdiom: true, def: "Don't bring up old conflicts." },
+      { text: "Make a long story short", isIdiom: true, def: "To get to the point." },
+      { text: "Read between the lines", isIdiom: true, def: "To understand a hidden meaning." },
+      { text: "The tip of the iceberg", isIdiom: true, def: "A small part of a much bigger problem." },
+      { text: "Think outside the box", isIdiom: true, def: "To be creative." },
+      { text: "Get the ball rolling", isIdiom: true, def: "To start something." },
+      { text: "Face the music", isIdiom: true, def: "To accept the consequences." },
+      { text: "Bite off more than you can chew", isIdiom: true, def: "To take on too much." },
+      { text: "Burn bridges", isIdiom: true, def: "To damage relationships permanently." },
+      { text: "A dime a dozen", isIdiom: true, def: "Very common and cheap." },
+      { text: "The elephant in the room", isIdiom: true, def: "An obvious problem everyone ignores." },
+      { text: "Throw someone under the bus", isIdiom: true, def: "To betray someone for personal gain." },
+      // Fake idioms
+      { text: "Throw the banana", isIdiom: false, def: null },
+      { text: "Run the cookie cycle", isIdiom: false, def: null },
+      { text: "Kick the frog", isIdiom: false, def: null },
+      { text: "Dance with your keyboard", isIdiom: false, def: null },
+      { text: "Slide the envelope", isIdiom: false, def: null }
+    ];
+
+    let shuffled = questions.sort(() => Math.random() - 0.5).slice(0, 20);
+    let current = 0;
+    let score = 0;
+
+    function showQuestion() {
+      document.getElementById("questionNum").innerText = `Question ${current + 1} of ${shuffled.length}`;
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${shuffled.length}`;
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("idiom").innerText = shuffled[current].text;
+    }
+
+    function swipe(isIdiom) {
+      const q = shuffled[current];
+      const correct = q.isIdiom === isIdiom;
+      document.getElementById(correct ? "sound-correct" : "sound-wrong").play();
+      if (correct) {
+        score++;
+        document.getElementById("feedback").innerHTML = `✅ Correct!` + (q.def ? `<br>${q.def}` : "");
+      } else {
+        document.getElementById("feedback").innerHTML = `❌ Wrong!` + (q.def ? `<br>Meaning: ${q.def}` : "<br>This is not an idiom.");
+      }
+      document.getElementById("progressScore").innerText = `Score: ${score} / ${shuffled.length}`;
+    }
+
+    function nextQuestion() {
+      if (current < shuffled.length - 1) {
+        current++;
+        showQuestion();
+      } else {
+                document.body.innerHTML = `
+          <h2>🎉 Game Complete!</h2>
+          <p>Your score: ${score} / ${questions.length}</p>
+          <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🏠 Back to Home
+          </button>
+        `;      
+      }
+    }
+
+    showQuestion();
+  </script>
+
+  <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+  </button>
+
+</body>
+</html>

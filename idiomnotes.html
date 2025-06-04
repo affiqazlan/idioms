@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idiom Explorer: Meaning, Context & Culture</title>
+    <style>
+        :root {
+            --a1-color: #4CAF50;
+            --a2-color: #2196F3;
+            --b1-color: #FFC107;
+            --b2-color: #FF9800;
+            --c1-color: #F44336;
+            --c2-color: #9C27B0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #search {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            min-width: 250px;
+        }
+        
+        .idiom-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .idiom-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border-top: 4px solid;
+        }
+        
+        .idiom-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .idiom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .idiom-phrase {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .idiom-level {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .idiom-meaning {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .idiom-details {
+            margin-top: 15px;
+            border-top: 1px dashed #eee;
+            padding-top: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 8px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 3px;
+            color: #555;
+        }
+        
+        /* Level-specific colors */
+        .level-A1 { border-color: var(--a1-color); background-color: rgba(76, 175, 80, 0.05); }
+        .level-A1 .idiom-level { background-color: var(--a1-color); }
+        
+        .level-A2 { border-color: var(--a2-color); background-color: rgba(33, 150, 243, 0.05); }
+        .level-A2 .idiom-level { background-color: var(--a2-color); }
+        
+        .level-B1 { border-color: var(--b1-color); background-color: rgba(255, 193, 7, 0.05); }
+        .level-B1 .idiom-level { background-color: var(--b1-color); }
+        
+        .level-B2 { border-color: var(--b2-color); background-color: rgba(255, 152, 0, 0.05); }
+        .level-B2 .idiom-level { background-color: var(--b2-color); }
+        
+        .level-C1 { border-color: var(--c1-color); background-color: rgba(244, 67, 54, 0.05); }
+        .level-C1 .idiom-level { background-color: var(--c1-color); }
+        
+        .level-C2 { border-color: var(--c2-color); background-color: rgba(156, 39, 176, 0.05); }
+        .level-C2 .idiom-level { background-color: var(--c2-color); }
+        
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: #777;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .idiom-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            #search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Idiom Explorer: Meaning, Context & Culture</h1>
+        <p class="subtitle">Explore 120 English idioms with meanings, usage examples, and cultural backgrounds</p>
+    </header>
+    
+    <div class="controls">
+        <div class="filter-group">
+            <button class="filter-btn active" data-level="all">All Levels</button>
+            <button class="filter-btn" data-level="A1">A1 Beginner</button>
+            <button class="filter-btn" data-level="A2">A2 Elementary</button>
+            <button class="filter-btn" data-level="B1">B1 Intermediate</button>
+            <button class="filter-btn" data-level="B2">B2 Upper Intermediate</button>
+            <button class="filter-btn" data-level="C1">C1 Advanced</button>
+            <button class="filter-btn" data-level="C2">C2 Proficient</button>
+        </div>
+        <input type="text" id="search" placeholder="Search idioms...">
+    </div>
+    
+    <div class="idiom-container" id="idiomContainer">
+        <!-- Idiom cards will be inserted here by JavaScript -->
+    </div>
+
+    <script>
+        // Complete idiom data with all 120 entries
+        const idiomData = {
+            "title": "Idiom Explorer: Meaning, Context & Culture",
+            "idioms": [
+                {
+                    "no": 1,
+                    "idiom": "Break the ice",
+                    "level": "A1",
+                    "meaning": "To start a conversation in a social situation",
+                    "usage": "To break the ice, the teacher started with a funny story.",
+                    "cultural_background": "Comes from the idea of breaking ice to allow ships to pass and start communication.",
+                    "theme": "Social situations",
+                    "logical_understanding": "Imagine breaking actual ice before sailing — it helps start movement, just like starting a conversation."
+                },
+                {
+                    "no": 2,
+                    "idiom": "Under the weather",
+                    "level": "A1",
+                    "meaning": "Feeling sick or unwell",
+                    "usage": "I didn't go to class today because I was feeling under the weather.",
+                    "cultural_background": "Comes from nautical slang when sick sailors were sent below deck.",
+                    "theme": "Health",
+                    "logical_understanding": "Think of someone under bad weather, feeling gloomy and sick."
+                },
+                {
+                    "no": 3,
+                    "idiom": "A piece of cake",
+                    "level": "A1",
+                    "meaning": "Something very easy to do",
+                    "usage": "The test was a piece of cake; I finished it in 10 minutes.",
+                    "cultural_background": "Probably from 19th-century cakewalk competitions where winners received cake.",
+                    "theme": "Difficulty/Ease",
+                    "logical_understanding": "Cake is sweet and easy to eat — so something very easy feels like eating cake."
+                },
+                {
+                    "no": 4,
+                    "idiom": "In hot water",
+                    "level": "A1",
+                    "meaning": "In trouble or facing punishment",
+                    "usage": "She was in hot water after missing the deadline.",
+                    "cultural_background": "Started in the 16th century, implying being in trouble, like being scalded.",
+                    "theme": "Trouble",
+                    "logical_understanding": "If you fall into hot water, it's painful — like being in trouble."
+                },
+                {
+                    "no": 5,
+                    "idiom": "Hit the books",
+                    "level": "A1",
+                    "meaning": "To study hard",
+                    "usage": "You better hit the books if you want to pass tomorrow's exam.",
+                    "cultural_background": "Modern American idiom suggesting intense study.",
+                    "theme": "Education",
+                    "logical_understanding": "Imagine literally hitting or opening books — it means starting to study seriously."
+                },
+                {
+                    "no": 6,
+                    "idiom": "On cloud nine",
+                    "level": "A1",
+                    "meaning": "Extremely happy",
+                    "usage": "He was on cloud nine after getting the scholarship.",
+                    "cultural_background": "Talks about the U.S. Weather Bureau's cloud classification, with 9 being the fluffiest.",
+                    "theme": "Emotions",
+                    "logical_understanding": "Cloud nine sounds very high and soft — like being extremely happy."
+                },
+                {
+                    "no": 7,
+                    "idiom": "It's not my cup of tea",
+                    "level": "A1",
+                    "meaning": "Not something one enjoys or prefers",
+                    "usage": "Camping is not my cup of tea—I prefer hotels.",
+                    "cultural_background": "British origin; tea being a common pleasure—if not yours, it's not enjoyable.",
+                    "theme": "Preferences",
+                    "logical_understanding": "You like some teas but not others — so this means something you don't enjoy."
+                },
+                {
+                    "no": 8,
+                    "idiom": "Over the moon",
+                    "level": "A1",
+                    "meaning": "Very pleased or delighted",
+                    "usage": "She was over the moon when she heard the good news.",
+                    "cultural_background": "First popularized by nursery rhymes and later used in British sports journalism.",
+                    "theme": "Emotions",
+                    "logical_understanding": "Being over the moon is extremely high — symbolizing great happiness."
+                },
+                {
+                    "no": 9,
+                    "idiom": "Once in a blue moon",
+                    "level": "A1",
+                    "meaning": "Very rarely",
+                    "usage": "We only go out to eat once in a blue moon.",
+                    "cultural_background": "A blue moon is the rare second full moon in a month.",
+                    "theme": "Time/Frequency",
+                    "logical_understanding": "Blue moons are rare, so this idiom means something that happens very rarely."
+                },
+                {
+                    "no": 10,
+                    "idiom": "A hot potato",
+                    "level": "A1",
+                    "meaning": "A controversial issue",
+                    "usage": "The topic of AI in exams is a hot potato in education now.",
+                    "cultural_background": "Means something too dangerous to handle—like a hot object.",
+                    "theme": "Controversial issues",
+                    "logical_understanding": "Imagine trying to hold a hot potato — it's uncomfortable, just like dealing with a sensitive topic."
+                },
+                {
+                    "no": 11,
+                    "idiom": "As easy as ABC",
+                    "level": "A1",
+                    "meaning": "Very simple",
+                    "usage": "Using this app is as easy as ABC.",
+                    "cultural_background": "Alphabet learning metaphor from early education.",
+                    "theme": "Difficulty/Ease",
+                    "logical_understanding": "The alphabet is one of the first things we learn — so it represents something very simple."
+                },
+                {
+                    "no": 12,
+                    "idiom": "Time flies",
+                    "level": "A1",
+                    "meaning": "Time passes very quickly",
+                    "usage": "Time flies when you're having fun!",
+                    "cultural_background": "Comes from the Latin 'tempus fugit', popularized in poetry.",
+                    "theme": "Time",
+                    "logical_understanding": "We can't see time, but it feels like it moves fast when we're enjoying ourselves."
+                },
+                {
+                    "no": 13,
+                    "idiom": "Call it a day",
+                    "level": "A1",
+                    "meaning": "To stop working for the day",
+                    "usage": "We finished the project, so let's call it a day.",
+                    "cultural_background": "Work-related phrase from labor environments.",
+                    "theme": "Work",
+                    "logical_understanding": "Imagine stopping work when the day ends — it means to stop what you're doing."
+                },
+                {
+                    "no": 14,
+                    "idiom": "Cold feet",
+                    "level": "A1",
+                    "meaning": "Sudden loss of confidence",
+                    "usage": "He got cold feet before the wedding.",
+                    "cultural_background": "Comes from the army—soldiers reluctant to fight might be said to have 'cold feet'.",
+                    "theme": "Emotions",
+                    "logical_understanding": "Cold feet make it hard to move — symbolizing fear or hesitation before doing something big."
+                },
+                {
+                    "no": 15,
+                    "idiom": "A big fish in a small pond",
+                    "level": "A1",
+                    "meaning": "An important person in a small group",
+                    "usage": "He moved to the city because he was a big fish in a small pond.",
+                    "cultural_background": "Talks about someone important in a small context.",
+                    "theme": "Social status",
+                    "logical_understanding": "A big fish stands out in a small area — like someone important in a small group."
+                },
+                {
+                    "no": 16,
+                    "idiom": "Full of beans",
+                    "level": "A1",
+                    "meaning": "Energetic and lively",
+                    "usage": "The kids are full of beans this morning.",
+                    "cultural_background": "Possibly from horse racing—horses fed beans were energetic.",
+                    "theme": "Energy",
+                    "logical_understanding": "Beans give energy — so someone 'full of beans' is full of energy."
+                },
+                {
+                    "no": 17,
+                    "idiom": "In black and white",
+                    "level": "A1",
+                    "meaning": "In written or printed form",
+                    "usage": "The agreement is now in black and white.",
+                    "cultural_background": "From the contrast in printed text—facts written clearly.",
+                    "theme": "Truth/Clarity",
+                    "logical_understanding": "Things printed in black and white are clear and official — so this means clear proof."
+                },
+                {
+                    "no": 18,
+                    "idiom": "Keep an eye on",
+                    "level": "A1",
+                    "meaning": "To watch something or someone carefully",
+                    "usage": "Please keep an eye on my bag while I go to the toilet.",
+                    "cultural_background": "A phrase that means something else for supervision.",
+                    "theme": "Monitoring",
+                    "logical_understanding": "Literally watching with your eye — it means to monitor something carefully."
+                },
+                {
+                    "no": 19,
+                    "idiom": "No pain, no gain",
+                    "level": "A1",
+                    "meaning": "Hard work is necessary for success",
+                    "usage": "He trains every day—no pain, no gain!",
+                    "cultural_background": "Modern saying popularized in fitness culture.",
+                    "theme": "Motivation",
+                    "logical_understanding": "You must feel discomfort to grow stronger — like exercise or studying."
+                },
+                {
+                    "no": 20,
+                    "idiom": "The early bird catches the worm",
+                    "level": "A1",
+                    "meaning": "People who act early have an advantage",
+                    "usage": "She always arrives early because the early bird catches the worm.",
+                    "cultural_background": "Old saying promoting initiative.",
+                    "theme": "Success/Motivation",
+                    "logical_understanding": "If a bird comes early, it has a better chance to find worms before others."
+                },
+                {
+                    "no": 21,
+                    "idiom": "Let the cat out of the bag",
+                    "level": "A2",
+                    "meaning": "To reveal a secret by mistake.",
+                    "usage": "She let the cat out of the bag about the surprise party.",
+                    "cultural_background": "Comes from old markets where people would sell a 'pig in a poke' (a bag), but sometimes a cat was put in instead. Revealing the cat exposed the trick.",
+                    "theme": "Secrets",
+                    "logical_understanding": "If you open a bag and a cat jumps out, everyone can see what was hidden. It's like revealing a secret."
+                },
+                {
+                    "no": 22,
+                    "idiom": "Hit the nail on the head",
+                    "level": "A2",
+                    "meaning": "To say or do something exactly right.",
+                    "usage": "You hit the nail on the head with your answer.",
+                    "cultural_background": "Comes from carpentry—hitting the nail directly on the head is precise and effective.",
+                    "theme": "Accuracy",
+                    "logical_understanding": "When you hit the top of a nail perfectly, it goes in well—just like saying the exact right thing."
+                },
+                {
+                    "no": 23,
+                    "idiom": "The ball is in your court",
+                    "level": "A2",
+                    "meaning": "It's your turn to take action or make a decision.",
+                    "usage": "I've done all I can—the ball is in your court now.",
+                    "cultural_background": "From sports like tennis, where the ball must be returned by the other player.",
+                    "theme": "Responsibility",
+                    "logical_understanding": "When it's your turn in a game, the ball is in your side—you have to make the next move."
+                },
+                {
+                    "no": 24,
+                    "idiom": "When pigs fly",
+                    "level": "A2",
+                    "meaning": "Something that will never happen.",
+                    "usage": "He'll tidy his room when pigs fly!",
+                    "cultural_background": "Humorous way of saying something is impossible—pigs obviously can't fly.",
+                    "theme": "Impossibility",
+                    "logical_understanding": "We know pigs can't fly, so it means 'never' in a funny way."
+                },
+                {
+                    "no": 25,
+                    "idiom": "Cry over spilled milk",
+                    "level": "A2",
+                    "meaning": "To be upset about something that has already happened and can't be changed.",
+                    "usage": "It's no use crying over spilled milk—just clean it up and move on.",
+                    "cultural_background": "Old proverb reminding people not to worry about small past mistakes.",
+                    "theme": "Regret",
+                    "logical_understanding": "Once milk is spilled, you can't put it back in the bottle—no point getting upset."
+                },
+                {
+                    "no": 26,
+                    "idiom": "Get cold feet",
+                    "level": "A2",
+                    "meaning": "To suddenly feel too nervous to do something.",
+                    "usage": "She got cold feet and cancelled the wedding.",
+                    "cultural_background": "From military slang where hesitant soldiers were said to have 'cold feet'.",
+                    "theme": "Emotions",
+                    "logical_understanding": "Cold feet make you feel uncomfortable, like being too nervous to move forward."
+                },
+                {
+                    "no": 27,
+                    "idiom": "Kill two birds with one stone",
+                    "level": "A2",
+                    "meaning": "To achieve two things at once.",
+                    "usage": "By taking the bus, I kill two birds with one stone: I save money and avoid traffic.",
+                    "cultural_background": "Old proverb using hunting imagery to describe efficiency.",
+                    "theme": "Efficiency",
+                    "logical_understanding": "Imagine hitting two birds at once — it shows you're solving two problems with one action."
+                },
+                {
+                    "no": 28,
+                    "idiom": "Barking up the wrong tree",
+                    "level": "A2",
+                    "meaning": "To make a wrong assumption or blame the wrong person.",
+                    "usage": "If you think I broke the vase, you're barking up the wrong tree.",
+                    "cultural_background": "From hunting dogs barking at the base of the wrong tree where no animal is hiding.",
+                    "theme": "Mistakes",
+                    "logical_understanding": "A dog barking at an empty tree means it's making a mistake—just like blaming the wrong person."
+                },
+                {
+                    "no": 29,
+                    "idiom": "It's a small world",
+                    "level": "A2",
+                    "meaning": "Used when you meet someone unexpectedly or share a strange connection.",
+                    "usage": "I met my old classmate in Paris—what a small world!",
+                    "cultural_background": "Reflects the idea that, despite the size of the world, coincidences happen.",
+                    "theme": "Surprise",
+                    "logical_understanding": "Even though the world is big, running into someone you know makes it feel small."
+                },
+                {
+                    "no": 30,
+                    "idiom": "In the same boat",
+                    "level": "A2",
+                    "meaning": "To be in the same bad situation as someone else.",
+                    "usage": "We're both broke until payday—we're in the same boat.",
+                    "cultural_background": "From sailing—if people are in the same boat, they face the same risks.",
+                    "theme": "Shared experience",
+                    "logical_understanding": "Everyone in a boat shares the same fate—if it sinks, all are affected."
+                },
+                {
+                    "no": 31,
+                    "idiom": "Burn the candle at both ends",
+                    "level": "A2",
+                    "meaning": "To work too hard without rest.",
+                    "usage": "He's burning the candle at both ends—working all day and studying all night.",
+                    "cultural_background": "Comes from lighting both ends of a candle, making it burn out faster.",
+                    "theme": "Exhaustion",
+                    "logical_understanding": "If you burn a candle at both ends, it runs out quickly—like people who don't rest."
+                },
+                {
+                    "no": 32,
+                    "idiom": "Pull someone's leg",
+                    "level": "A2",
+                    "meaning": "To joke or tease someone.",
+                    "usage": "I was just pulling your leg—I didn't win the lottery!",
+                    "cultural_background": "Possibly comes from tricking or tripping someone by pulling their leg.",
+                    "theme": "Humour",
+                    "logical_understanding": "Like gently pulling someone's leg to trick or surprise them—it's not serious."
+                },
+                {
+                    "no": 33,
+                    "idiom": "Bite your tongue",
+                    "level": "A2",
+                    "meaning": "To stop yourself from saying something.",
+                    "usage": "I had to bite my tongue during the meeting to avoid arguing.",
+                    "cultural_background": "An image of physically stopping yourself from speaking by biting your tongue.",
+                    "theme": "Self-control",
+                    "logical_understanding": "Imagine biting your tongue to keep your mouth shut—so you don't say something bad."
+                },
+                {
+                    "no": 34,
+                    "idiom": "On thin ice",
+                    "level": "A2",
+                    "meaning": "In a risky or dangerous situation.",
+                    "usage": "He's on thin ice after missing two deadlines.",
+                    "cultural_background": "Walking on thin ice is dangerous and could break at any time.",
+                    "theme": "Risk",
+                    "logical_understanding": "Thin ice can break easily, so being 'on thin ice' means you're in danger of failing."
+                },
+                {
+                    "no": 35,
+                    "idiom": "The last straw",
+                    "level": "A2",
+                    "meaning": "The final problem that causes you to lose patience.",
+                    "usage": "His rude comment was the last straw—I finally quit.",
+                    "cultural_background": "From the saying 'the straw that broke the camel's back'—one more small burden causes collapse.",
+                    "theme": "Frustration",
+                    "logical_understanding": "A small thing, like a straw, might not matter—until it's too much and breaks everything."
+                },
+                {
+                    "no": 36,
+                    "idiom": "A leopard can't change its spots",
+                    "level": "A2",
+                    "meaning": "People cannot change their true nature.",
+                    "usage": "He apologized, but a leopard can't change its spots.",
+                    "cultural_background": "Biblical origin; based on the idea that a leopard's spots are part of its identity.",
+                    "theme": "Character",
+                    "logical_understanding": "A leopard will always have spots—just like people tend to stay the same inside."
+                },
+                {
+                    "no": 37,
+                    "idiom": "Break a leg",
+                    "level": "A2",
+                    "meaning": "Good luck (especially said to performers).",
+                    "usage": "You'll do great in the play—break a leg!",
+                    "cultural_background": "From theatre superstition—wishing good luck by saying the opposite.",
+                    "theme": "Encouragement",
+                    "logical_understanding": "It's a way to wish someone well without actually saying 'good luck'."
+                },
+                {
+                    "no": 38,
+                    "idiom": "Don't put all your eggs in one basket",
+                    "level": "A2",
+                    "meaning": "Don't rely on only one plan or option.",
+                    "usage": "You should apply to more than one job—don't put all your eggs in one basket.",
+                    "cultural_background": "Old saying that if the basket drops, all eggs break—better to spread the risk.",
+                    "theme": "Caution",
+                    "logical_understanding": "If you drop one basket, all your eggs break—so better to divide your risks."
+                },
+                {
+                    "no": 39,
+                    "idiom": "Keep your chin up",
+                    "level": "A2",
+                    "meaning": "Stay positive in a difficult time.",
+                    "usage": "Things will get better—keep your chin up.",
+                    "cultural_background": "Came from military or motivational talk—holding your head high shows confidence.",
+                    "theme": "Positivity",
+                    "logical_understanding": "Holding your chin up means looking strong and confident even when times are tough."
+                },
+                {
+                    "no": 40,
+                    "idiom": "Sit on the fence",
+                    "level": "A2",
+                    "meaning": "To avoid choosing a side in a disagreement.",
+                    "usage": "He always sits on the fence during political debates.",
+                    "cultural_background": "Visual idea of sitting on a fence instead of choosing one side of it.",
+                    "theme": "Indecision",
+                    "logical_understanding": "Someone sitting on a fence hasn't chosen which side to jump down to—so they stay undecided."
+                },
+                {
+                    "no": 41,
+                    "idiom": "Cost an arm and a leg",
+                    "level": "B1",
+                    "meaning": "To be very expensive.",
+                    "usage": "That designer bag cost an arm and a leg!",
+                    "cultural_background": "Possibly from wartime injuries, where losing limbs was a huge cost.",
+                    "theme": "Money",
+                    "logical_understanding": "Giving up an arm and a leg shows how high the price is—it's a big sacrifice."
+                },
+                {
+                    "no": 42,
+                    "idiom": "Actions speak louder than words",
+                    "level": "B1",
+                    "meaning": "What someone does is more important than what they say.",
+                    "usage": "He promised to help, but didn't—actions speak louder than words.",
+                    "cultural_background": "Old proverb teaching that behavior is more trustworthy than talk.",
+                    "theme": "Behaviour",
+                    "logical_understanding": "People may say anything, but their true intentions are shown by what they do."
+                },
+                {
+                    "no": 43,
+                    "idiom": "Beat around the bush",
+                    "level": "B1",
+                    "meaning": "To avoid talking directly about something.",
+                    "usage": "Stop beating around the bush and tell me what happened.",
+                    "cultural_background": "From hunting, where people avoided hitting bushes directly to not scare the game.",
+                    "theme": "Communication",
+                    "logical_understanding": "Instead of going straight to the point, you talk in circles—like avoiding the bush."
+                },
+                {
+                    "no": 44,
+                    "idiom": "Blessing in disguise",
+                    "level": "B1",
+                    "meaning": "Something that seems bad at first but turns out to be good.",
+                    "usage": "Losing that job was a blessing in disguise—it led me to something better.",
+                    "cultural_background": "Old phrase showing that something unfortunate might bring unexpected benefit.",
+                    "theme": "Unexpected benefit",
+                    "logical_understanding": "It looks like a problem, but later you see it was secretly helpful."
+                },
+                {
+                    "no": 45,
+                    "idiom": "Get your act together",
+                    "level": "B1",
+                    "meaning": "To become more organized and effective.",
+                    "usage": "You need to get your act together if you want to pass.",
+                    "cultural_background": "Possibly from theatre—an actor improving their performance.",
+                    "theme": "Responsibility",
+                    "logical_understanding": "If your 'act' is messy, nothing works—so you need to fix it and do better."
+                },
+                {
+                    "no": 46,
+                    "idiom": "Hit the sack",
+                    "level": "B1",
+                    "meaning": "To go to bed or go to sleep.",
+                    "usage": "I'm really tired—I'm going to hit the sack.",
+                    "cultural_background": "Informal phrase from the idea of hitting or dropping onto a sack (bed).",
+                    "theme": "Daily routine",
+                    "logical_understanding": "You hit or drop onto the bed, like dropping onto a sack—so it means going to sleep."
+                },
+                {
+                    "no": 47,
+                    "idiom": "Jump the gun",
+                    "level": "B1",
+                    "meaning": "To do something too soon, especially before the right time.",
+                    "usage": "We haven't finished planning yet—don't jump the gun.",
+                    "cultural_background": "Comes from racing where runners start before the gun signal.",
+                    "theme": "Timing",
+                    "logical_understanding": "If you start before the gun, you're too early—just like acting before you're ready."
+                },
+                {
+                    "no": 48,
+                    "idiom": "Put yourself in someone's shoes",
+                    "level": "B1",
+                    "meaning": "To imagine how someone else feels.",
+                    "usage": "Try to put yourself in her shoes before judging her decision.",
+                    "cultural_background": "From empathy—imagining walking in another person's shoes.",
+                    "theme": "Empathy",
+                    "logical_understanding": "If you wear someone else's shoes, you understand their path and feelings."
+                },
+                {
+                    "no": 49,
+                    "idiom": "Stick to your guns",
+                    "level": "B1",
+                    "meaning": "To refuse to change your opinion or decision.",
+                    "usage": "Even when criticized, she stuck to her guns.",
+                    "cultural_background": "Military origin—soldiers staying at their posts despite danger.",
+                    "theme": "Determination",
+                    "logical_understanding": "You don't leave your position—you keep holding firm like a soldier on duty."
+                },
+                {
+                    "no": 50,
+                    "idiom": "Burn the midnight oil",
+                    "level": "B1",
+                    "meaning": "To work late into the night.",
+                    "usage": "He's been burning the midnight oil to finish the report.",
+                    "cultural_background": "From when people used oil lamps to work at night.",
+                    "theme": "Hard work",
+                    "logical_understanding": "If you're still burning oil at midnight, it means you're working very late."
+                },
+                {
+                    "no": 51,
+                    "idiom": "Speak of the devil",
+                    "level": "B1",
+                    "meaning": "Used when someone mentioned appears unexpectedly.",
+                    "usage": "Speak of the devil—there's Sarah at the door!",
+                    "cultural_background": "Old superstition that talking about the devil might make him appear.",
+                    "theme": "Surprise",
+                    "logical_understanding": "You're talking about someone, and they suddenly show up—it's like magic timing."
+                },
+                {
+                    "no": 52,
+                    "idiom": "The best of both worlds",
+                    "level": "B1",
+                    "meaning": "To enjoy two different advantages at the same time.",
+                    "usage": "Working from home gives me the best of both worlds: freedom and comfort.",
+                    "cultural_background": "Phrase showing a perfect situation where two good things are combined.",
+                    "theme": "Balance",
+                    "logical_understanding": "You get the benefit of two separate things—like eating cake and staying fit!"
+                },
+                {
+                    "no": 53,
+                    "idiom": "Throw in the towel",
+                    "level": "B1",
+                    "meaning": "To give up or stop trying.",
+                    "usage": "After three rejections, she threw in the towel.",
+                    "cultural_background": "From boxing—throwing in a towel ends the match, signaling defeat.",
+                    "theme": "Surrender",
+                    "logical_understanding": "You stop fighting—like in boxing—because continuing is pointless."
+                },
+                {
+                    "no": 54,
+                    "idiom": "A storm in a teacup",
+                    "level": "B1",
+                    "meaning": "A big reaction to a small problem.",
+                    "usage": "It was just a small mistake, but she made a storm in a teacup.",
+                    "cultural_background": "British idiom—imagining something dramatic happening in something tiny.",
+                    "theme": "Overreaction",
+                    "logical_understanding": "Storms are big, teacups are small—so it means overreacting to a tiny issue."
+                },
+                {
+                    "no": 55,
+                    "idiom": "Keep something at bay",
+                    "level": "B1",
+                    "meaning": "To prevent something bad from happening.",
+                    "usage": "He exercised daily to keep stress at bay.",
+                    "cultural_background": "Old phrase about holding off danger (like wild animals) from approaching.",
+                    "theme": "Prevention",
+                    "logical_understanding": "If you keep something 'at bay,' you keep it far away so it can't hurt you."
+                },
+                {
+                    "no": 56,
+                    "idiom": "Every cloud has a silver lining",
+                    "level": "B1",
+                    "meaning": "There is something good in every bad situation.",
+                    "usage": "Even though I failed, I learned something—every cloud has a silver lining.",
+                    "cultural_background": "Old poetic image: even dark clouds have a bright edge when the sun shines behind.",
+                    "theme": "Optimism",
+                    "logical_understanding": "Dark times may still have a hidden good part—like a silver edge around a cloud."
+                },
+                {
+                    "no": 57,
+                    "idiom": "Add fuel to the fire",
+                    "level": "B1",
+                    "meaning": "To make a bad situation worse.",
+                    "usage": "His angry words only added fuel to the fire.",
+                    "cultural_background": "From real fires—adding fuel makes the fire burn stronger.",
+                    "theme": "Conflict",
+                    "logical_understanding": "If a fire is already burning, throwing more wood makes it worse—same with problems."
+                },
+                {
+                    "no": 58,
+                    "idiom": "Rule of thumb",
+                    "level": "B1",
+                    "meaning": "A general guideline based on experience.",
+                    "usage": "As a rule of thumb, drink 8 glasses of water a day.",
+                    "cultural_background": "Old phrase from when people used the width of a thumb as a rough measurement.",
+                    "theme": "Advice",
+                    "logical_understanding": "Using a thumb as a rough measure shows it's not exact, but usually works."
+                },
+                {
+                    "no": 59,
+                    "idiom": "Not playing with a full deck",
+                    "level": "B1",
+                    "meaning": "To behave strangely or seem mentally unstable.",
+                    "usage": "He keeps talking to plants—he's not playing with a full deck.",
+                    "cultural_background": "From card games—a full deck has 52 cards; missing cards means something's off.",
+                    "theme": "Mental state",
+                    "logical_understanding": "Missing cards means the game won't go well—like someone not thinking clearly."
+                },
+                {
+                    "no": 60,
+                    "idiom": "Out of the blue",
+                    "level": "B1",
+                    "meaning": "Happening unexpectedly.",
+                    "usage": "He called me out of the blue after years of silence.",
+                    "cultural_background": "From the image of lightning coming from a clear blue sky.",
+                    "theme": "Surprise",
+                    "logical_understanding": "A clear blue sky suddenly has lightning—just like an unexpected event."
+                },
+                {
+                    "no": 61,
+                    "idiom": "Put all your eggs in one basket",
+                    "level": "B2",
+                    "meaning": "To rely on only one option or plan.",
+                    "usage": "Investing everything in one company is putting all your eggs in one basket.",
+                    "cultural_background": "Old saying—if the basket drops, all the eggs break. It's risky to depend on one thing.",
+                    "theme": "Caution",
+                    "logical_understanding": "If the basket drops, all eggs are gone. Spreading them reduces risk."
+                },
+                {
+                    "no": 62,
+                    "idiom": "By the skin of your teeth",
+                    "level": "B2",
+                    "meaning": "Just barely succeed in doing something.",
+                    "usage": "He passed the exam by the skin of his teeth.",
+                    "cultural_background": "Biblical expression meaning a very narrow escape or success.",
+                    "theme": "Narrow success",
+                    "logical_understanding": "Teeth don't have skin—so it's a funny way to say you barely made it."
+                },
+                {
+                    "no": 63,
+                    "idiom": "Call the shots",
+                    "level": "B2",
+                    "meaning": "To be in control or make decisions.",
+                    "usage": "The manager calls the shots on the project.",
+                    "cultural_background": "From military or sports—referring to someone giving orders or making strategic moves.",
+                    "theme": "Authority",
+                    "logical_understanding": "If you call the shots, you decide what happens—like a leader or coach."
+                },
+                {
+                    "no": 64,
+                    "idiom": "Cut corners",
+                    "level": "B2",
+                    "meaning": "To do something quickly and cheaply by sacrificing quality.",
+                    "usage": "They cut corners when building the house, and now there are problems.",
+                    "cultural_background": "From racing or construction—cutting corners means not following the full path or skipping steps.",
+                    "theme": "Shortcuts",
+                    "logical_understanding": "Instead of doing the full job, you skip steps to save time or money."
+                },
+                {
+                    "no": 65,
+                    "idiom": "Give someone the benefit of the doubt",
+                    "level": "B2",
+                    "meaning": "To believe someone is innocent or telling the truth, even if unsure.",
+                    "usage": "She was late again, but I gave her the benefit of the doubt.",
+                    "cultural_background": "Legal or moral idea—choosing to trust someone when evidence is unclear.",
+                    "theme": "Trust",
+                    "logical_understanding": "Even if unsure, you assume the best and don't blame the person."
+                },
+                {
+                    "no": 66,
+                    "idiom": "Go the extra mile",
+                    "level": "B2",
+                    "meaning": "To make more effort than expected.",
+                    "usage": "She always goes the extra mile to help her students.",
+                    "cultural_background": "Biblical reference—Roman soldiers could force others to carry their gear a mile; going further showed dedication.",
+                    "theme": "Effort",
+                    "logical_understanding": "You don't stop at the minimum—you walk an extra mile to show commitment."
+                },
+                {
+                    "no": 67,
+                    "idiom": "Jump on the bandwagon",
+                    "level": "B2",
+                    "meaning": "To join or support something that's already popular.",
+                    "usage": "Now everyone's jumping on the fitness bandwagon.",
+                    "cultural_background": "From political campaigns where people joined winning parades and bands.",
+                    "theme": "Trends",
+                    "logical_understanding": "People hop onto popular things like a bandwagon—just because it's trendy."
+                },
+                {
+                    "no": 68,
+                    "idiom": "Leave no stone unturned",
+                    "level": "B2",
+                    "meaning": "To search or try everything possible.",
+                    "usage": "The police left no stone unturned in the investigation.",
+                    "cultural_background": "Ancient Greek origin—military leaders checked under every stone for enemies.",
+                    "theme": "Thoroughness",
+                    "logical_understanding": "You turn over every stone—check everything until you find the answer."
+                },
+                {
+                    "no": 69,
+                    "idiom": "Let sleeping dogs lie",
+                    "level": "B2",
+                    "meaning": "Don't bring up old problems.",
+                    "usage": "We've moved on—let sleeping dogs lie.",
+                    "cultural_background": "If a dog is sleeping peacefully, waking it might cause trouble.",
+                    "theme": "Avoiding conflict",
+                    "logical_understanding": "Old issues are quiet—bringing them up might cause unnecessary trouble."
+                },
+                {
+                    "no": 70,
+                    "idiom": "Make a long story short",
+                    "level": "B2",
+                    "meaning": "To tell something briefly.",
+                    "usage": "To make a long story short, we missed the flight.",
+                    "cultural_background": "Common phrase to skip details and get to the point.",
+                    "theme": "Storytelling",
+                    "logical_understanding": "Instead of telling everything, you skip to the ending or main point."
+                },
+                {
+                    "no": 71,
+                    "idiom": "Read between the lines",
+                    "level": "B2",
+                    "meaning": "To understand something that's not said directly.",
+                    "usage": "He didn't say it, but reading between the lines, he's upset.",
+                    "cultural_background": "Refers to finding hidden meanings beyond the actual text.",
+                    "theme": "Implied meaning",
+                    "logical_understanding": "You don't just look at what's written—you sense what's hidden between the lines."
+                },
+                {
+                    "no": 72,
+                    "idiom": "The tip of the iceberg",
+                    "level": "B2",
+                    "meaning": "A small part of a much bigger problem.",
+                    "usage": "These complaints are just the tip of the iceberg.",
+                    "cultural_background": "Only a small part of an iceberg is visible above water—most is hidden below.",
+                    "theme": "Hidden problems",
+                    "logical_understanding": "You only see a little, but there's a lot more underneath like an iceberg."
+                },
+                {
+                    "no": 73,
+                    "idiom": "Think outside the box",
+                    "level": "B2",
+                    "meaning": "To think creatively or differently.",
+                    "usage": "We need to think outside the box to solve this problem.",
+                    "cultural_background": "From creativity workshops—thinking beyond traditional or expected ideas.",
+                    "theme": "Creativity",
+                    "logical_understanding": "The 'box' is the usual way of thinking—creative ideas happen outside it."
+                },
+                {
+                    "no": 74,
+                    "idiom": "Get the ball rolling",
+                    "level": "B2",
+                    "meaning": "To start something, especially a process or activity.",
+                    "usage": "Let's get the ball rolling on this project.",
+                    "cultural_background": "From sports—once the ball moves, the game or activity begins.",
+                    "theme": "Initiation",
+                    "logical_understanding": "The ball has to roll to start movement—like beginning any task."
+                },
+                {
+                    "no": 75,
+                    "idiom": "Face the music",
+                    "level": "B2",
+                    "meaning": "To accept the consequences of your actions.",
+                    "usage": "He cheated and now he has to face the music.",
+                    "cultural_background": "From theatre or military—standing in front of a band or audience for judgement.",
+                    "theme": "Accountability",
+                    "logical_understanding": "Facing music means standing up and accepting whatever comes your way."
+                },
+                {
+                    "no": 76,
+                    "idiom": "Bite off more than you can chew",
+                    "level": "B2",
+                    "meaning": "To take on more work than you can handle.",
+                    "usage": "He bit off more than he could chew by accepting three jobs.",
+                    "cultural_background": "Eating metaphor—if you bite too much, it's hard to chew.",
+                    "theme": "Overcommitment",
+                    "logical_understanding": "Taking too big a bite makes it hard to chew—like accepting too many tasks."
+                },
+                {
+                    "no": 77,
+                    "idiom": "Burn bridges",
+                    "level": "B2",
+                    "meaning": "To destroy relationships permanently.",
+                    "usage": "He burned bridges with his old boss by quitting angrily.",
+                    "cultural_background": "From war—destroying bridges so no one can return.",
+                    "theme": "Relationships",
+                    "logical_understanding": "If you burn a bridge, you can't go back—just like cutting ties with people."
+                },
+                {
+                    "no": 78,
+                    "idiom": "A dime a dozen",
+                    "level": "B2",
+                    "meaning": "Very common and not valuable.",
+                    "usage": "Cheap pens like these are a dime a dozen.",
+                    "cultural_background": "From the time when many cheap items could be bought for 10 cents.",
+                    "theme": "Value",
+                    "logical_understanding": "If something is easy to find or buy, it's not very special."
+                },
+                {
+                    "no": 79,
+                    "idiom": "The elephant in the room",
+                    "level": "B2",
+                    "meaning": "A big problem that people are ignoring.",
+                    "usage": "No one mentioned the budget cuts—it was the elephant in the room.",
+                    "cultural_background": "A large elephant in a room would be impossible to ignore—yet people pretend it's not there.",
+                    "theme": "Avoidance",
+                    "logical_understanding": "Something huge is obviously present, but people avoid talking about it."
+                },
+                {
+                    "no": 80,
+                    "idiom": "Throw someone under the bus",
+                    "level": "B2",
+                    "meaning": "To blame or betray someone to protect yourself.",
+                    "usage": "He threw his teammate under the bus to avoid punishment.",
+                    "cultural_background": "Modern slang—suggesting someone is sacrificed suddenly and harshly.",
+                    "theme": "Betrayal",
+                    "logical_understanding": "You push someone else into trouble so you don't get blamed."
+                },
+                {
+                    "no": 81,
+                    "idiom": "Back to the drawing board",
+                    "level": "C1",
+                    "meaning": "To start again after a failed attempt.",
+                    "usage": "Our plan didn't work, so it's back to the drawing board.",
+                    "cultural_background": "From engineering/design—when a design fails, the designer goes back to sketch ideas again.",
+                    "theme": "Restart",
+                    "logical_understanding": "If your plan fails, you go back to your board to make a new one."
+                },
+                {
+                    "no": 82,
+                    "idiom": "Bend over backwards",
+                    "level": "C1",
+                    "meaning": "To try very hard to help someone or do something.",
+                    "usage": "She bent over backwards to make the guests feel welcome.",
+                    "cultural_background": "A physical image showing effort—bending backward is difficult.",
+                    "theme": "Effort",
+                    "logical_understanding": "Doing something hard or unnatural just to help someone shows great effort."
+                },
+                {
+                    "no": 83,
+                    "idiom": "Cross that bridge when you come to it",
+                    "level": "C1",
+                    "meaning": "Deal with a problem only when it actually happens.",
+                    "usage": "We don't know if we'll be late—let's cross that bridge when we come to it.",
+                    "cultural_background": "From travel—crossing a bridge only when you reach it, not worrying in advance.",
+                    "theme": "Worry",
+                    "logical_understanding": "You don't cross a bridge before you reach it—same with future problems."
+                },
+                {
+                    "no": 84,
+                    "idiom": "Cut to the chase",
+                    "level": "C1",
+                    "meaning": "To get to the point quickly.",
+                    "usage": "Let's cut to the chase—what's the final decision?",
+                    "cultural_background": "From old films—cutting directly to the exciting action scene.",
+                    "theme": "Communication",
+                    "logical_understanding": "Skip the boring parts and go straight to the important part."
+                },
+                {
+                    "no": 85,
+                    "idiom": "Don't count your chickens before they hatch",
+                    "level": "C1",
+                    "meaning": "Don't assume success before it actually happens.",
+                    "usage": "She was already planning the trip—but don't count your chickens before they hatch.",
+                    "cultural_background": "Old farm saying—baby chicks may not survive, so don't expect them too soon.",
+                    "theme": "Caution",
+                    "logical_understanding": "You can't count on things that haven't happened yet—like eggs that haven't hatched."
+                },
+                {
+                    "no": 86,
+                    "idiom": "Get a taste of your own medicine",
+                    "level": "C1",
+                    "meaning": "To be treated the way you've treated others (usually badly).",
+                    "usage": "He used to ignore others, but now he's getting a taste of his own medicine.",
+                    "cultural_background": "Based on the idea of someone being forced to try their own treatment.",
+                    "theme": "Justice",
+                    "logical_understanding": "If you give others something bad, it's fair for you to experience it too."
+                },
+                {
+                    "no": 87,
+                    "idiom": "Give someone the cold shoulder",
+                    "level": "C1",
+                    "meaning": "To deliberately ignore someone.",
+                    "usage": "After the fight, she gave him the cold shoulder.",
+                    "cultural_background": "Old custom where a cold meal meant unfriendliness.",
+                    "theme": "Rejection",
+                    "logical_understanding": "Turning your shoulder and ignoring someone shows you're not interested in them."
+                },
+                {
+                    "no": 88,
+                    "idiom": "Have bigger fish to fry",
+                    "level": "C1",
+                    "meaning": "To have more important things to do.",
+                    "usage": "I can't worry about that now—I've got bigger fish to fry.",
+                    "cultural_background": "Comes from cooking—choosing to focus on more valuable or important tasks.",
+                    "theme": "Priorities",
+                    "logical_understanding": "If you have bigger fish, you'll focus on them, not the small ones."
+                },
+                {
+                    "no": 89,
+                    "idiom": "In the heat of the moment",
+                    "level": "C1",
+                    "meaning": "While feeling strong emotions, often leading to poor judgment.",
+                    "usage": "He said it in the heat of the moment and didn't mean it.",
+                    "cultural_background": "Refers to the pressure or intensity of emotions at a specific time.",
+                    "theme": "Emotions",
+                    "logical_understanding": "When things are heated, people act without thinking clearly."
+                },
+                {
+                    "no": 90,
+                    "idiom": "Know the ropes",
+                    "level": "C1",
+                    "meaning": "To understand how to do a job or task well.",
+                    "usage": "Give her some time—she's still learning the ropes.",
+                    "cultural_background": "From sailing—learning to manage ropes was key to operating a ship.",
+                    "theme": "Experience",
+                    "logical_understanding": "Once you know the ropes, you know how to handle things properly."
+                },
+                {
+                    "no": 91,
+                    "idiom": "Leave someone in the lurch",
+                    "level": "C1",
+                    "meaning": "To abandon someone in a difficult situation.",
+                    "usage": "He quit suddenly and left his team in the lurch.",
+                    "cultural_background": "From an old French game; a 'lurch' was a hopeless situation.",
+                    "theme": "Abandonment",
+                    "logical_understanding": "Leaving someone when they need help the most makes things worse for them."
+                },
+                {
+                    "no": 92,
+                    "idiom": "Play devil's advocate",
+                    "level": "C1",
+                    "meaning": "To argue the opposite side to spark debate or test ideas.",
+                    "usage": "I'm just playing devil's advocate—you might still be right.",
+                    "cultural_background": "Catholic Church role to argue against sainthood claims.",
+                    "theme": "Debate",
+                    "logical_understanding": "You don't believe what you're saying—you argue the opposite to test it."
+                },
+                {
+                    "no": 93,
+                    "idiom": "Put a sock in it",
+                    "level": "C1",
+                    "meaning": "To tell someone to be quiet.",
+                    "usage": "You're too loud—put a sock in it!",
+                    "cultural_background": "Early 1900s; idea of stuffing a sock in something to stop the noise.",
+                    "theme": "Silence",
+                    "logical_understanding": "If you put a sock in something noisy, it becomes quiet—just like telling someone to hush."
+                },
+                {
+                    "no": 94,
+                    "idiom": "Sink or swim",
+                    "level": "C1",
+                    "meaning": "To succeed or fail on your own without help.",
+                    "usage": "On your first day, it's sink or swim.",
+                    "cultural_background": "From survival training—either you learn to swim or you drown.",
+                    "theme": "Challenge",
+                    "logical_understanding": "No one helps—you either succeed by effort or fail."
+                },
+                {
+                    "no": 95,
+                    "idiom": "Sweep under the rug",
+                    "level": "C1",
+                    "meaning": "To hide a problem instead of dealing with it.",
+                    "usage": "The company tried to sweep the issue under the rug.",
+                    "cultural_background": "Based on hiding dust or mess by sweeping it under a rug.",
+                    "theme": "Avoidance",
+                    "logical_understanding": "You hide mess instead of cleaning it, like ignoring a problem instead of fixing it."
+                },
+                {
+                    "no": 96,
+                    "idiom": "Take it with a grain of salt",
+                    "level": "C1",
+                    "meaning": "To not take something too seriously or literally.",
+                    "usage": "He exaggerates a lot, so take what he says with a grain of salt.",
+                    "cultural_background": "From ancient medicine—salt made food or stories easier to swallow.",
+                    "theme": "Skepticism",
+                    "logical_understanding": "You mentally add 'salt' to make it more acceptable, knowing it may not be 100% true."
+                },
+                {
+                    "no": 97,
+                    "idiom": "The writing on the wall",
+                    "level": "C1",
+                    "meaning": "A clear sign that something bad is going to happen.",
+                    "usage": "Sales were dropping—the writing was on the wall.",
+                    "cultural_background": "Biblical story of a warning written on a wall predicting a fall.",
+                    "theme": "Warning",
+                    "logical_understanding": "You see signs or hints of a problem that's coming soon."
+                },
+                {
+                    "no": 98,
+                    "idiom": "Throw in the towel",
+                    "level": "C1",
+                    "meaning": "To give up or stop trying.",
+                    "usage": "After three rejections, she threw in the towel.",
+                    "cultural_background": "From boxing—throwing in a towel ends the match, signaling defeat.",
+                    "theme": "Surrender",
+                    "logical_understanding": "You stop fighting—like in boxing—because continuing is pointless."
+                },
+                {
+                    "no": 99,
+                    "idiom": "Turn a blind eye",
+                    "level": "C1",
+                    "meaning": "To ignore something intentionally.",
+                    "usage": "The teacher turned a blind eye to the whispering.",
+                    "cultural_background": "Based on Admiral Nelson's story—he ignored a signal by holding a telescope to his blind eye.",
+                    "theme": "Ignorance",
+                    "logical_understanding": "You act like you didn't see something, even though you did."
+                },
+                {
+                    "no": 100,
+                    "idiom": "Up in the air",
+                    "level": "C1",
+                    "meaning": "Uncertain or undecided.",
+                    "usage": "Our travel plans are still up in the air.",
+                    "cultural_background": "Based on the idea that something floating in the air hasn't landed or settled yet.",
+                    "theme": "Uncertainty",
+                    "logical_understanding": "Like a balloon that hasn't landed—you don't know where it will end up."
+                },
+                {
+                    "no": 101,
+                    "idiom": "A feather in one's cap",
+                    "level": "C2",
+                    "meaning": "An achievement to be proud of.",
+                    "usage": "Winning the award was a feather in her cap.",
+                    "cultural_background": "From the tradition of adding a feather to a cap for each achievement.",
+                    "theme": "Achievement",
+                    "logical_understanding": "Each success adds a 'feather'—a symbol of pride and recognition."
+                },
+                {
+                    "no": 102,
+                    "idiom": "Ahead of the curve",
+                    "level": "C2",
+                    "meaning": "More advanced or modern than others.",
+                    "usage": "This company is ahead of the curve in AI development.",
+                    "cultural_background": "From statistics—being ahead of the curve means performing better than average.",
+                    "theme": "Innovation",
+                    "logical_understanding": "If you're ahead of others on a curve, you're leading or progressing faster."
+                },
+                {
+                    "no": 103,
+                    "idiom": "At the drop of a hat",
+                    "level": "C2",
+                    "meaning": "Immediately, without hesitation.",
+                    "usage": "She's ready to travel at the drop of a hat.",
+                    "cultural_background": "Old customs where a dropped hat signalled the start of action (e.g., fights or races).",
+                    "theme": "Readiness",
+                    "logical_understanding": "Dropping a hat is a quick signal—so this means doing something without delay."
+                },
+                {
+                    "no": 104,
+                    "idiom": "Beating a dead horse",
+                    "level": "C2",
+                    "meaning": "To keep talking about something that's already settled.",
+                    "usage": "Stop arguing about it—you're beating a dead horse.",
+                    "cultural_background": "A dead horse can't move—so trying to beat it is pointless.",
+                    "theme": "Futility",
+                    "logical_understanding": "There's no use trying to fix or revive what's already over."
+                },
+                {
+                    "no": 105,
+                    "idiom": "Between a rock and a hard place",
+                    "level": "C2",
+                    "meaning": "In a situation where all choices are bad.",
+                    "usage": "He was stuck between a rock and a hard place—resign or get fired.",
+                    "cultural_background": "American mining term—trapped in a tight, dangerous spot.",
+                    "theme": "Dilemma",
+                    "logical_understanding": "You're stuck between two bad options—whichever way you move, it's tough."
+                },
+                {
+                    "no": 106,
+                    "idiom": "By and large",
+                    "level": "C2",
+                    "meaning": "Generally speaking; overall.",
+                    "usage": "By and large, the team performed well.",
+                    "cultural_background": "Nautical origin—referring to how a ship sails under different wind conditions.",
+                    "theme": "Generalization",
+                    "logical_understanding": "Even if there are small problems, the overall situation is okay."
+                },
+                {
+                    "no": 107,
+                    "idiom": "Come rain or shine",
+                    "level": "C2",
+                    "meaning": "No matter what happens; consistently.",
+                    "usage": "She takes her morning walk come rain or shine.",
+                    "cultural_background": "Refers to weather—it doesn't matter if it rains or shines, the action continues.",
+                    "theme": "Reliability",
+                    "logical_understanding": "Whether conditions are good or bad, the activity still happens."
+                },
+                {
+                    "no": 108,
+                    "idiom": "Cut the mustard",
+                    "level": "C2",
+                    "meaning": "To meet expectations or perform well.",
+                    "usage": "The new employee really cuts the mustard.",
+                    "cultural_background": "Possibly from military or food preparation—cutting mustard seed being tough.",
+                    "theme": "Competence",
+                    "logical_understanding": "If you can 'cut' something difficult, you're good enough for the job."
+                },
+                {
+                    "no": 109,
+                    "idiom": "Draw a line in the sand",
+                    "level": "C2",
+                    "meaning": "To set a clear limit that must not be crossed.",
+                    "usage": "She drew a line in the sand—no phones at dinner.",
+                    "cultural_background": "Historically refers to an actual line drawn to mark a boundary or challenge.",
+                    "theme": "Boundaries",
+                    "logical_understanding": "A line in the sand shows a clear point where rules or patience stop."
+                },
+                {
+                    "no": 110,
+                    "idiom": "Get down to brass tacks",
+                    "level": "C2",
+                    "meaning": "To focus on the essential facts or details.",
+                    "usage": "Let's get down to brass tacks and talk money.",
+                    "cultural_background": "19th-century American shops measured fabric using brass tacks.",
+                    "theme": "Focus",
+                    "logical_understanding": "Forget the fluff—focus on the real, measurable things like tacks in a shop."
+                },
+                {
+                    "no": 111,
+                    "idiom": "Have an axe to grind",
+                    "level": "C2",
+                    "meaning": "To have a selfish reason or hidden agenda.",
+                    "usage": "Be careful—he has an axe to grind in this argument.",
+                    "cultural_background": "From a story where someone flatters another to get a personal favor (like sharpening an axe).",
+                    "theme": "Manipulation",
+                    "logical_understanding": "Someone might appear nice, but they're doing it for personal benefit."
+                },
+                {
+                    "no": 112,
+                    "idiom": "In the driver's seat",
+                    "level": "C2",
+                    "meaning": "To be in control of a situation.",
+                    "usage": "With her promotion, she's now in the driver's seat.",
+                    "cultural_background": "Refers to a literal driver controlling a vehicle.",
+                    "theme": "Control",
+                    "logical_understanding": "If you're driving, you choose the direction—just like leading a project."
+                },
+                {
+                    "no": 113,
+                    "idiom": "Keep your nose to the grindstone",
+                    "level": "C2",
+                    "meaning": "To work very hard and continuously.",
+                    "usage": "He kept his nose to the grindstone and finished the thesis early.",
+                    "cultural_background": "Refers to the image of sharpening tools on a grindstone with full focus.",
+                    "theme": "Hard work",
+                    "logical_understanding": "If your nose is close to work, you're concentrating and working hard."
+                },
+                {
+                    "no": 114,
+                    "idiom": "Not all it's cracked up to be",
+                    "level": "C2",
+                    "meaning": "Not as good as people say.",
+                    "usage": "The movie wasn't all it's cracked up to be.",
+                    "cultural_background": "Possibly from advertising or claims that exaggerate quality.",
+                    "theme": "Disappointment",
+                    "logical_understanding": "People talk it up, but in reality, it doesn't meet expectations."
+                },
+                {
+                    "no": 115,
+                    "idiom": "Off the beaten track",
+                    "level": "C2",
+                    "meaning": "In a place that is not well known or frequently visited.",
+                    "usage": "We stayed at a cabin off the beaten track.",
+                    "cultural_background": "From walking paths—beaten tracks are common; others are unexplored.",
+                    "theme": "Exploration",
+                    "logical_understanding": "It's far from the usual or expected places—less travelled."
+                },
+                {
+                    "no": 116,
+                    "idiom": "Put your money where your mouth is",
+                    "level": "C2",
+                    "meaning": "To support your words with actions, especially financially.",
+                    "usage": "If you really care, put your money where your mouth is and donate.",
+                    "cultural_background": "Means showing real commitment, not just talk.",
+                    "theme": "Action",
+                    "logical_understanding": "If you say something, back it up by doing it—especially with money."
+                },
+                {
+                    "no": 117,
+                    "idiom": "The whole nine yards",
+                    "level": "C2",
+                    "meaning": "Everything possible; the full effort.",
+                    "usage": "They gave the whole nine yards on this project.",
+                    "cultural_background": "Multiple theories—possibly from WWII or football, meaning going all the way.",
+                    "theme": "Thoroughness",
+                    "logical_understanding": "You don't hold back—you give everything you've got."
+                },
+                {
+                    "no": 118,
+                    "idiom": "Throw your weight around",
+                    "level": "C2",
+                    "meaning": "To use your power in an aggressive or bossy way.",
+                    "usage": "The manager was throwing his weight around again.",
+                    "cultural_background": "Suggests using one's influence or authority forcefully.",
+                    "theme": "Power",
+                    "logical_understanding": "You're using your position to push others around, like using physical weight."
+                },
+                {
+                    "no": 119,
+                    "idiom": "Toe the line",
+                    "level": "C2",
+                    "meaning": "To follow rules or conform strictly.",
+                    "usage": "Employees are expected to toe the line on company policy.",
+                    "cultural_background": "From racing—athletes must line up with toes on a marked line.",
+                    "theme": "Obedience",
+                    "logical_understanding": "You stand exactly where told, like following strict rules."
+                },
+                {
+                    "no": 120,
+                    "idiom": "With bells on",
+                    "level": "C2",
+                    "meaning": "To show up somewhere cheerfully or with enthusiasm.",
+                    "usage": "We'll be at your party—with bells on!",
+                    "cultural_background": "From traditions of dressing up with actual bells for celebration.",
+                    "theme": "Excitement",
+                    "logical_understanding": "Wearing bells suggests you're festive, excited, and ready to go."
+                }
+            ]
+        };
+
+        // Function to render idiom cards
+        function renderIdioms(idioms) {
+            const container = document.getElementById('idiomContainer');
+            container.innerHTML = '';
+            
+            if (idioms.length === 0) {
+                container.innerHTML = '<div class="no-results">No idioms match your search/filter criteria</div>';
+                return;
+            }
+            
+            idioms.forEach(idiom => {
+                const card = document.createElement('div');
+                card.className = `idiom-card level-${idiom.level}`;
+                card.innerHTML = `
+                    <div class="idiom-header">
+                        <h3 class="idiom-phrase">${idiom.idiom}</h3>
+                        <span class="idiom-level">${idiom.level}</span>
+                    </div>
+                    <p class="idiom-meaning">${idiom.meaning}</p>
+                    <div class="idiom-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Usage:</span>
+                            <span>${idiom.usage}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Cultural Background:</span>
+                            <span>${idiom.cultural_background}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Theme:</span>
+                            <span>${idiom.theme}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Logical Understanding:</span>
+                            <span>${idiom.logical_understanding}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize with all idioms
+            renderIdioms(idiomData.idioms);
+            
+            // Level filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const level = this.dataset.level;
+                    filterIdioms();
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', filterIdioms);
+            
+            function filterIdioms() {
+                const activeLevel = document.querySelector('.filter-btn.active').dataset.level;
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                const filtered = idiomData.idioms.filter(idiom => {
+                    const matchesLevel = activeLevel === 'all' || idiom.level === activeLevel;
+                    const matchesSearch = 
+                        idiom.idiom.toLowerCase().includes(searchTerm) ||
+                        idiom.meaning.toLowerCase().includes(searchTerm) ||
+                        idiom.usage.toLowerCase().includes(searchTerm) ||
+                        idiom.theme.toLowerCase().includes(searchTerm);
+                    
+                    return matchesLevel && matchesSearch;
+                });
+                
+                renderIdioms(filtered);
+            }
+        });
+    </script>
+
+   <button onclick="window.location.href='idiomhomepage.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🏠 Back to Home
+   </button>
+
+</body>
+</html>
