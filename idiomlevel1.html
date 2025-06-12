@@ -27,6 +27,7 @@
   <audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/woodpecker_pecking.ogg"></audio>
 
   <script>
+    let answered = false;
     const questions = [
       { emoji: "📚💥🧠", answer: "Hit the books", options: ["Hit the books", "Throw the book", "Book club"], def: "To study very hard." },
       { emoji: "🌧️🤒😞", answer: "Under the weather", options: ["Feel the rain", "Under the weather", "Weather forecast"], def: "Feeling sick." },
@@ -54,6 +55,7 @@
     let score = 0;
 
     function loadQuestion() {
+      answered = false; // reset flag for new question
       const q = questions[current];
       document.getElementById("questionNum").innerText = `Question ${current + 1} of ${questions.length}`;
       document.getElementById("score").innerText = `Score: ${score} / ${questions.length}`;
@@ -65,6 +67,9 @@
     }
 
     function checkAnswer(selected) {
+      if (answered) return; // block if already answered
+      answered = true; // set flag to prevent further answers
+
       const q = questions[current];
       if (selected === q.answer) {
         score++;
