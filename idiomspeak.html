@@ -27,7 +27,7 @@
     .btn.ghost{background:#f0f4f8;color:#0f172a;border:1px solid #e2e8f0}
     .inline{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .status{font-size:.95rem;color:#64748b}
-    .scoring div + div { margin-top: 12px; }
+    .scoring div + div { margin-top: 8px; }
     .meter{height:20px;width:560px;background:#eef2f7;border-radius:999px;overflow:hidden}
     .meter>span{display:block;height:100%;width:0;background:#22c55e;transition:width .3s}
     .tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.8rem;border:1px solid #e2e8f0;background:#f8fafc;color:#0f172a}
@@ -532,6 +532,17 @@
     // ---------- Speech recognition setup ----------
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     let rec, startTime = 0, wordsCount = 0;
+    let finalTranscript = '';
+    let confs = [];
+    const mean = arr => arr.reduce((a,b)=>a+b,0)/arr.length || 0;
+
+    // Collapse accidental repeats like "hit the hit the books"
+    function dedupePhrases(s){
+    return s
+      .replace(/\b(\w+\s+\w+)(?:\s+\1){1,}\b/gi, '$1')        // repeated bigrams
+      .replace(/\b(\w+\s+\w+\s+\w+)(?:\s+\1){1,}\b/gi, '$1')  // repeated trigrams
+      .replace(/\b(\w{1,4})(?:\s+\1){2,}\b/gi, '$1');         // very short words 3+ times
+    }
     let lastConfidence = null;
 
     function startASR(){
@@ -540,6 +551,13 @@
         return;
       }
       rec = new SR();
+      finalTranscript = '';
+      confs = [];
+      rec.maxAlternatives = 1;
+
+      rec.lang = 'en-US';
+      rec.interimResults = true;
+      rec.continuous = true;
       rec.lang = 'en-US';
       rec.interimResults = true;
       rec.continuous = true;
@@ -551,25 +569,39 @@
       startTime = Date.now(); wordsCount = 0; lastConfidence = null;
 
       rec.onstart = ()=> micStatus.textContent = 'Listening… speak now.';
-      rec.onresult = (e)=>{
-        let finalTxt = '';
-        for (let i=0;i<e.results.length;i++){
-          const res = e.results[i];
-          if (res.isFinal){
-            finalTxt += res[0].transcript + ' ';
-            lastConfidence = res[0].confidence;
-          } else {
-            // show interim too
-            finalTxt += res[0].transcript + ' ';
-          }
-        }
-        transcriptDiv.textContent = finalTxt.trim();
-        const w = finalTxt.trim().split(/\s+/).filter(Boolean).length;
-        wordsCount = w;
-        const mins = (Date.now()-startTime)/60000;
-        wpmSpan.textContent = mins>0 ? Math.round(w/mins) : 0;
-        confSpan.textContent = lastConfidence==null? '–' : Math.round(lastConfidence*100)+'%';
-      };
+rec.onresult = (e) => {
+  let interim = '';
+
+  // Only process NEW results
+  for (let i = e.resultIndex; i < e.results.length; i++) {
+    const res = e.results[i];
+    const text = res[0].transcript;
+
+    if (res.isFinal) {
+      finalTranscript += (finalTranscript ? ' ' : '') + text;
+      confs.push(res[0].confidence ?? 0);
+    } else {
+      interim += (interim ? ' ' : '') + text;
+    }
+  }
+
+  // Show: final + interim (then de-dupe repeats)
+  let display = (finalTranscript + (interim ? ' ' + interim : '')).trim();
+  display = dedupePhrases(display);
+  transcriptDiv.textContent = display;
+
+  // Update WPM/Confidence consistently
+  const words = display.split(/\s+/).filter(Boolean).length;
+  wordsCount = words;
+  const mins = (Date.now() - startTime) / 60000;
+  wpmSpan.textContent = mins > 0 ? Math.round(words / mins) : 0;
+
+  const confMean = confs.length ? (confs.reduce((a,b)=>a+b,0)/confs.length) : null;
+  confSpan.textContent = confMean == null ? '–' : Math.round(confMean * 100) + '%';
+
+  // keep compatibility with your scoring() which uses lastConfidence
+  if (confMean != null) lastConfidence = confMean;
+};
       rec.onerror = (e)=>{ micStatus.textContent = 'ASR error: '+e.error; };
       rec.onend = ()=>{ micStatus.textContent = 'Mic stopped.'; };
       rec.start();
