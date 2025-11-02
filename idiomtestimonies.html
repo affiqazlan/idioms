@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Testimonies — Idiom Games Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary:#3498db;
+      --accent:#9b59b6;
+      --light:#f0f4f8;
+      --dark:#2c3e50;
+      --primary-dark:#2a7abd;
+    }
+    body {
+      font-family: "Poppins", system-ui, sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+      min-height: 100vh;
+      margin: 0;
+      color: var(--dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-size: 2rem;
+      color: var(--dark);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    p.subtitle {
+      color:#555;
+      text-align:center;
+      max-width:600px;
+      margin-bottom: 30px;
+    }
+    .top-tabs {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin:10px 0 25px;
+    }
+    .tab-btn {
+      background:var(--primary);
+      color:#fff;
+      text-decoration:none;
+      padding:8px 14px;
+      border-radius:8px;
+      font-weight:600;
+      border:2px solid var(--primary);
+      transition:background .2s;
+    }
+    .tab-btn:hover {
+      background:var(--primary-dark);
+      border-color:var(--primary-dark);
+    }
+
+    /* Floating background patterns */
+    .bg-shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.3;
+      filter: blur(80px);
+      z-index: 0;
+      animation: float 8s ease-in-out infinite alternate;
+    }
+    .shape1 { width:250px; height:250px; background:#81d4fa; top:80px; left:5%; animation-delay:0s; }
+    .shape2 { width:300px; height:300px; background:#f8bbd0; bottom:60px; right:8%; animation-delay:2s; }
+
+    @keyframes float {
+      from { transform: translateY(0px); }
+      to { transform: translateY(30px); }
+    }
+
+    /* Testimony grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+      z-index: 1;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+      border: 2px solid rgba(52,152,219,0.15);
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+
+    .name {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.95rem;
+    }
+
+    .video {
+      position: relative;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 0 0 16px 16px;
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
+      font-size: 0.9em;
+      z-index: 1;
+    }
+
+    @media (max-width:600px){
+      h1 { font-size:1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background glow -->
+  <div class="bg-shape shape1"></div>
+  <div class="bg-shape shape2"></div>
+
+  <h1>🎓 Student Testimonies</h1>
+  <p class="subtitle">Real feedback from learners who tried the Idiom Games Hub.</p>
+  <div class="top-tabs">
+    <a class="tab-btn" href="idiomhomepage.html">🏠 Home</a>
+    <a class="tab-btn" href="idiompurchase.html">🛒 Purchase</a>
+  </div>
+
+  <div class="grid">
+    <!-- 1 -->
+    <div class="card">
+      <div class="name">Nisa, Aleeya & Farhana — Bioindustrial Technology</div>
+      <div class="video">
+        <iframe 
+          src="https://www.youtube.com/embed/3-ot3JeozYw"
+          title="Nisa, Aleeya & Farhana — Bioindustrial Technology"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="name">Dea Qarina — Foundation in Science, UMK</div>
+      <div class="video">
+        <iframe 
+          src="https://www.youtube.com/embed/CxiTHc6Pqm4"
+          title="Dea Qarina — Foundation in Science, UMK"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="card">
+      <div class="name">Afif Mikail — Bachelor of Applied Science (Food Security)</div>
+      <div class="video">
+        <iframe 
+          src="https://www.youtube.com/embed/kTl9O6UNZd0"
+          title="Afif Mikail — Bachelor of Applied Science (Food Security)"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card">
+      <div class="name">Abqari — Foundation in Science, UMK</div>
+      <div class="video">
+        <iframe 
+          src="https://www.youtube.com/embed/xcePJOydMNI"
+          title="Abqari — Foundation in Science, UMK"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="card">
+      <div class="name">Daniel — Bachelor of Energy Technology</div>
+      <div class="video">
+        <iframe 
+          src="https://www.youtube.com/embed/KYTekqiAMwk"
+          title="Daniel — Bachelor of Energy Technology"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>© Idiom Games Hub</footer>
+</body>
+</html>
