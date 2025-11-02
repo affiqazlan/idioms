@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🧠 Idiom Games Hub</title>
+  <title>🪩 Idiom Games Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -152,12 +152,27 @@
     .disabled .play-btn {
       background: var(--gray);
     }
+
+/* === Tabs (added) === */
+.top-tabs{
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  margin: 10px 0 18px;
+}
+.tab-btn{
+  display:inline-block; background: var(--primary); color:#fff; text-decoration:none;
+  padding:8px 14px; border-radius:8px; font-weight:600; border:2px solid var(--primary);
+}
+.tab-btn:hover{ background: var(--primary-dark); border-color: var(--primary-dark); }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🧠 Idiom Games Hub</h1>
+    <h1>🪩 Idiom Games Hub</h1>
     <p class="subtitle">Master English idioms through fun interactive games at all CEFR levels</p>
+<nav class="top-tabs">
+  <a class="tab-btn" href="idiomtestimonies.html">🎓 Student Testimonies</a>
+  <a class="tab-btn" href="idiompurchase.html">🛒 Purchase (RM5)</a>
+</nav>
     
     <div class="cefr-info">
       <h3>Common European Framework of Reference (CEFR) Levels</h3>
@@ -261,6 +276,16 @@
         <p>Complete missing words</p>
         <p class="cefr">CEFR C2 (Proficient)</p>
         <button class="play-btn" onclick="startGame(6)">Play Now</button>
+      </div>
+
+      <!-- Word Sudoku Game Card -->
+      <div class="game-card">
+        <div class="emoji">🧮</div>
+        <div class="level">Bonus Game</div>
+        <h3>Word Play Sudoku</h3>
+        <p>Solve idiom-based Sudoku puzzles across CEFR levels</p>
+        <p class="cefr">CEFR A1–C2</p>
+        <button class="play-btn" onclick="window.location.href='idiomsudoku.html'">Play Sudoku</button>
       </div>
     </div>
     
