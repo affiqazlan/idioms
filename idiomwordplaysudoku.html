@@ -470,7 +470,9 @@ function goHome(){
 }
 
 el.homeBtn.addEventListener('click', goHome);
-el.homeFooter.addEventListener('click', goHome);
+el.homeFooter.addEventListener('click', () => {
+  window.location.href = "idiomhomepage.html";
+});
 
 el.prevLevel.addEventListener('click', ()=>{
   currentIndex = (currentIndex - 1 + LEVELS.length) % LEVELS.length;
